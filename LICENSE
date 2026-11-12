@@ -1,0 +1,44 @@
+CONTRATO DE LICENÇA DE SOFTWARE E PROPRIEDADE INTELECTUAL
+(COMMERCIAL, OEM & EVALUATION LICENSE AGREEMENT)
+
+Copyright (c) 1988 Eurico Schmidt. Todos os direitos reservados.
+Contato Comercial e Suporte: euricosalvesschmidt@gmail.com
+
+1. CONCESSÃO DE DIREITOS E MODALIDADES DE USO
+O presente software, bibliotecas (.so, .a, cabeçalhos .h e artefatos associados) e documentações
+são disponibilizados pelo Titular sob os seguintes termos:
+
+a) Avaliação Técnica e Prova de Conceito (PoC):
+Esta versão é fornecida exclusivamente para fins de avaliação técnica, desenvolvimento e testes
+de integração de prova de conceito (PoC). Qualquer uso em ambiente comercial ou de produção
+requer um contrato de licença comercial formal assinado entre as partes.
+
+b) Licença Comercial de Produção (Per-Instance / CPU Core):
+O uso em ambiente de produção requer a contratação prévia de licença não exclusiva e intransferível,
+tributada ou tarifada por nó de execução, socket ou CPU core dedicado.
+
+c) Distribuição Embutida (OEM):
+A incorporação, empacotamento ou redistribuição deste software como componente integrante de
+produtos, appliances, sistemas de terceiros ou serviços gerenciados (SaaS/OEM) dependerá de
+acordo contratual específico de OEM estipulando os devidos royalties por distribuição.
+
+2. PROPRIEDADE INTELECTUAL EXCLUSIVA
+O software é licenciado, não vendido. Todos os direitos autorais, patentes, segredos comerciais,
+marcas e direitos de propriedade intelectual relativos ao código-fonte, binários, bibliotecas
+e documentação permanecem de titularidade exclusiva de Eurico Schmidt. Nenhum direito de propriedade
+é transferido ao Licenciado.
+
+3. PROIBIÇÃO DE ENGENHARIA REVERSA E MODIFICAÇÕES
+O Licenciado não deverá, direta ou indiretamente:
+I.   Descompilar, desmontar, aplicar engenharia reversa ou tentar extrair o código-fonte da biblioteca,
+     dos binários ou de quaisquer de seus componentes;
+II.  Modificar, adaptar, traduzir ou criar obras derivadas não autorizadas expressamente por escrito;
+III. Remover, ocultar ou alterar quaisquer avisos de direitos autorais, marcas, assinaturas ou avisos de licença.
+
+4. AUSÊNCIA DE GARANTIA E ISENÇÃO DE DANOS (AS-IS)
+O software é fornecido "no estado em que se encontra" (AS-IS), sem garantias expressas ou implícitas de qualquer
+tipo, incluindo, sem limitação, garantias de comercialização, adequação a uma finalidade específica ou
+não violação de direitos.
+Em nenhuma circunstância o Titular será responsável por quaisquer danos diretos, indiretos, incidentais,
+especiais, punitivos ou consequentes (incluindo perda de dados, lucros cessantes, paralisação de negócios
+ou falhas em testes) decorrentes do uso ou da incapacidade de uso deste software.
