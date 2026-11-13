@@ -90,3 +90,29 @@ existentes: crie diretórios independentes para esses usos.
 `engine_run demo DIRETORIO [SEED]` e `schipia-context model ARQUIVO [SEED]`
 criam modelos de demonstração sem treinamento. Servem para verificar comandos,
 não para produzir histórias legíveis. Não os confunda com o Tucano fornecido.
+
+
+## Catálogo completo em `bin/`, `lib/` e `include/`
+
+Com `export LD_LIBRARY_PATH="$PWD/lib:${LD_LIBRARY_PATH:-}"`:
+
+### CLIs de produção e conversão
+- `bin/engine_run`: geração, modo interativo, inspeção, chat (`--chat`), `--out-of-core`, `--sparse` e memória associativa (`memory-put` / `memory-get`).
+- `bin/schipia-server`: servidor HTTP persistente (`GET /health`, `POST /v1/completions`, `POST /v1/chat/completions`).
+- `bin/schipia-import-gguf`: importador direto GGUF v2/v3 -> Q4 + BPE (`F32`/`F16`/`BF16`/`Q8_0`/`Q4_0`/`Q4_K`).
+- `bin/schipia-import-tucano` e `bin/schipia-import-llama`: importadores para pesos Tucano/HuggingFace e `llama2.c`.
+- `bin/schipia-pack`: empacotador (`--q4`, `--q8`, `--tree`, `--page-align`).
+- `bin/schipia-tokenize` e `bin/convert_vocab`: tokenização e conversão de vocabulários.
+- `bin/schipia-context`: manipulação direta de sequências e checkpoints KV por IDs.
+- `bin/schipia-eval`: medição de perplexidade e throughput em corpus de texto.
+
+### Benchmarks e autoverificação
+- `bin/bench_kernels`: benchmark de `gemm`, `softmax`, `rmsnorm` e `swiglu` (AVX2/FMA vs escalar/auto-vec).
+- `bin/bench_transformer`: benchmark de `sct_forward`, checkpoint/reabertura e leitura KV.
+- `bin/bench_engine`: benchmark fim-a-fim da engine (`bench_engine MODEL VOCAB ...`).
+- `bin/bench_store` e `bin/bench_tokenizer`: benchmarks da camada de persistência e tokenizador `libschiptree`.
+- `bin/test_store`, `bin/test_tokenizer`, `bin/test_kernels`, `bin/test_transformer`, `bin/test_engine`: suíte de testes unitários e validação bit-exact.
+
+### SDK C (`lib/libschipia.so` e `include/`)
+- Headers públicos em `include/`: `schipia.h` (guarda-chuva), `engine.h`, `transformer.h`, `tokenizer.h`, `kernels.h`, `memory_store.h`, `vocab_import.h`.
+- Biblioteca compartilhada: `lib/libschipia.so` (acompanhada de `libschiptree.so.1.0` e `libschipbase.so` / `libschipjson.so`).

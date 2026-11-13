@@ -66,3 +66,43 @@ Use Ctrl+C no terminal. Se houver uma conexão ativa, aguarde seu encerramento.
 Depois de parar o processo, arquive ou remova somente os contextos com o prefixo
 escolhido para esse servidor. Em uma nova execução, escolha outro prefixo para
 evitar colisão com arquivos remanescentes.
+
+
+## Motor persistente e endpoint `/v1/chat/completions`
+
+O `./bin/schipia-server` mantém o modelo e o cache KV **carregados em memória**
+(`sct_engine_open`) entre requisições, alocando novas sequências via
+`sct_engine_new_sequence` sem reiniciar processo a cada chamada e aproveitando
+automaticamente o prefix caching em `libschiptree`.
+
+### Inicialização
+
+```sh
+./bin/schipia-server model.sct_model vocab.sct_tokens 8080 /var/tmp/server.cache 4
+```
+
+### `POST /v1/chat/completions`
+
+Compatível com clientes OpenAI (com ou sem streaming SSE):
+
+```sh
+curl -N http://127.0.0.1:8080/v1/chat/completions \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "chat_template": "chatml",
+    "messages": [
+      {"role": "system", "content": "Você é um assistente técnico."},
+      {"role": "user", "content": "Resuma o que é KV cache."}
+    ],
+    "max_tokens": 128,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 40,
+    "repeat_penalty": 1.1,
+    "stream": true
+  }'
+```
+
+Parâmetros JSON suportados em `/v1/completions` e `/v1/chat/completions`:
+`prompt`, `messages`, `chat_template` / `format` (`chatml` ou `llama3`),
+`max_tokens`, `temperature`, `top_p`, `top_k`, `repeat_penalty`, `seed` e `stream`.

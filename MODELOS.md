@@ -92,3 +92,28 @@ Também existe `schipia-import-llama CHECKPOINT.bin TOKENIZER.bin DIRETORIO` par
 checkpoints FP32 originais llama2.c compatíveis. Não é um leitor de GGUF. O
 modelo e o tokenizador precisam corresponder; trocar apenas um deles não é
 uma forma válida de alterar o idioma ou a capacidade do modelo.
+
+
+## Importação direta de modelos GGUF (`schipia-import-gguf`)
+
+O utilitário `./bin/schipia-import-gguf` converte arquivos **GGUF v2/v3**
+(LLaMA, Mistral, Qwen2, Gemma, DeepSeek, entre outros) diretamente para
+`model.sct_model` (Q4) e `vocab.sct_tokens` (BPE):
+
+```sh
+./bin/schipia-import-gguf modelo.gguf ./saida_modelo --max-context 4096
+```
+
+Recursos suportados na importação:
+- **Tipos de tensor**: `F32`, `F16`, `BF16`, `Q8_0`, `Q4_0` e `Q4_K` (requantizados diretamente para blocos Q4 da SchipIA).
+- **Arquitetura**: Grouped-Query Attention (**GQA**, `kv_heads != heads`), `rope_theta` configurável, `rms_eps` configurável, até 48 camadas (`SCT_MAX_LAYERS`), `dim <= 8192`, `hidden <= 32768`, `vocab <= 262144` e contexto até `131072` tokens.
+- **Tokenizador**: extração automática de tokens e merges BPE dos metadados GGUF.
+
+## Bundle em árvore, alinhamento de página e deduplicação (`--tree --page-align`)
+
+```sh
+./bin/schipia-pack --q4 --tree --page-align model.sct_model ./modelo_tree_dir
+```
+
+- `--tree`: cria diretório indexado por `libschiptree` para lookup rápido de clusters.
+- `--page-align`: alinha cada cluster de 32 neurônios em fronteiras de **4096 bytes**, reorganiza `SCT_DOWN` em layout **cluster-major** (leitura sequencial por cluster ativo) e aplica **deduplicação content-addressed** de clusters idênticos.

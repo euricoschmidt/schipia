@@ -70,3 +70,25 @@ o servidor HTTP também tem seu próprio custo. A taxa do avaliador não deve se
 interpretada como garantia de taxa de uma requisição HTTP ou da CLI com sorteio.
 
 Para reproduzir uma comparação de uso, veja [Ferramentas](FERRAMENTAS.md).
+
+
+## Otimizações CPU e benchmarks de kernels (13/11/2026)
+
+Principais otimizações implementadas nos binários atuais:
+- **Micro-tiling 4-row (`q4_4rows`, `q8_4rows`)** com `_mm_prefetch` (`_MM_HINT_T0`) para maximizar reuso de ativações Q8 em registradores AVX2/FMA (e suporte a ARM64 NEON).
+- **Fusão de operadores Q4**: `sct_matvec_qkv_q4` (Q/K/V em uma passada) e `sct_ffn_gate_up_swiglu_q4` (Gate+Up+SiLU em registradores com `exp8` vetorizado bit-exact).
+- **Prefill em lote (`sct_forward_batch`)**: multiplicação multi-token (`sct_rows_q4_batch_avx2_raw`) durante o processamento do prompt.
+- **Amostragem Top-K com min-heap `O(V log K)`**, verificação `finite_vector` em AVX2 inteiro e eliminação de `memcpy` em blocos KV completos na atenção.
+
+Medições locais (`./bin/bench_kernels` e `./bin/bench_transformer`, `avx2/fma`, gcc `14.2.0`):
+
+| Benchmark | Resultado | Speedup vs escalar/auto-vec |
+|---|---:|---:|
+| `gemm M=64 N=64 K=64` | `87.96 GF/s` | `1.94x` vs auto-vec |
+| `gemm M=256 N=256 K=256` | `75.72 GF/s` | `2.49x` vs auto-vec |
+| `gemm M=512 N=512 K=512` | `61.48 GF/s` | `2.15x` vs auto-vec |
+| `gemm M=1 N=1024 K=1024` | `47.26 GF/s` | `5.47x` vs auto-vec |
+| `softmax n=4096` | `1.239 ns/el` | `5.57x` vs escalar |
+| `rmsnorm n=4096` | `1.793 ns/el` | `1.74x` vs escalar |
+| `swiglu n=4096` | `1.723 ns/el` | `4.31x` vs escalar |
+| `bench_transformer` (`dim=64, hidden=128, heads=4, layers=2`) | `38539.2 tokens/s` | `bit_exact=1` |

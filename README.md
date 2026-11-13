@@ -1,37 +1,40 @@
-# SchipIA — manual do usuário
+# SchipIA — manual do usuário e distribuição binária
 
-Geração local e continuação de histórias em português, com sessões persistentes,
-opções de amostragem, modelos em formatos menores e servidor HTTP de streaming.
-Este manual acompanha a versão **0.8.1**.
+Motor de inferência LLM local em C11 com memória persistente em `libschiptree`,
+kernels SIMD (AVX2/FMA e ARM64 NEON), quantização BF16/Q8/Q4, importador GGUF,
+prefix caching persistente, modo esparso/out-of-core e servidor HTTP OpenAI-compatível.
 
-## Comece aqui
+Este repositório inclui os **executáveis pré-compilados** (`bin/`), **bibliotecas**
+(`lib/`) e **headers públicos do SDK C** (`include/`), além da documentação completa
+para testar todos os recursos da engine (sem publicação dos arquivos-fonte).
 
-1. [Instale o pacote e prepare o uso sem root](INSTALACAO.md).
-2. [Gere sua primeira história e retome o contexto depois](USO.md).
-3. [Escolha BF16, Q8 ou Q4 e conheça os recursos experimentais](MODELOS.md).
+## Comece em 30 segundos
+
+```sh
+export LD_LIBRARY_PATH="$PWD/lib:${LD_LIBRARY_PATH:-}"
+./bin/engine_run demo /tmp/schipia-demo 42
+./bin/bench_kernels
+./bin/test_kernels
+```
+
+Para modelos reais:
+1. [Instale ou execute diretamente com `bin/` e `lib/`](INSTALACAO.md).
+2. [Importe um modelo GGUF ou use Tucano/LLaMA](MODELOS.md).
+3. [Gere texto, use templates de chat e sessões persistentes](USO.md).
+4. [Suba o servidor HTTP (`/v1/completions` e `/v1/chat/completions`)](HTTP.md).
 
 ## Todos os recursos
 
 | Guia | Conteúdo |
 |---|---|
-| [Instalação](INSTALACAO.md) | Debian, APT, pacote recebido, permissões e atualização. |
-| [Uso no terminal](USO.md) | Geração, amostragem, threads, modo interativo, arquivos, sessões e memória associativa. |
-| [Modelos](MODELOS.md) | Conversão BF16/Q8/Q4, bundle em árvore, esparsidade e importadores compatíveis. |
-| [Servidor HTTP](HTTP.md) | Inicialização, health, streaming, campos aceitos e limites atuais. |
-| [Ferramentas](FERRAMENTAS.md) | Tokenização, conversão de vocabulários, avaliação e contexto por IDs. |
-| [Desempenho](DESEMPENHO.md) | Medições, memória, qualidade e escolha de configuração. |
-| [Solução de problemas](SOLUCAO_DE_PROBLEMAS.md) | Diagnóstico de instalação, contexto, permissões, geração e servidor. |
+| [Instalação](INSTALACAO.md) | Execução direta via `bin/`+`lib/`, pacote Debian/APT, permissões e SDK C. |
+| [Uso no terminal](USO.md) | Geração, amostragem Top-K/Top-P, `--chat`, `--system`, `--sparse`, `--out-of-core`, sessões e memória associativa. |
+| [Modelos](MODELOS.md) | Importador `schipia-import-gguf` (F32/F16/BF16/Q8_0/Q4_0/Q4_K), GQA/RoPE, `schipia-pack` (`--q4`/`--q8`/`--tree`/`--page-align`). |
+| [Servidor HTTP](HTTP.md) | Motor persistente, `GET /health`, `POST /v1/completions`, `POST /v1/chat/completions` e streaming SSE. |
+| [Ferramentas e SDK](FERRAMENTAS.md) | Catálogo completo dos executáveis em `bin/`, benchmarks (`bench_*`), testes (`test_*`) e SDK C (`libschipia.so`). |
+| [Desempenho](DESEMPENHO.md) | Medições de kernels/transformer, otimizações AVX2/FMA, memória e escolha de configuração. |
+| [Solução de problemas](SOLUCAO_DE_PROBLEMAS.md) | Diagnóstico de `LD_LIBRARY_PATH`, contexto, permissões, geração e servidor. |
 | [Licença e componentes de terceiros](LICENCIAMENTO.md) | Termos de avaliação, produção, OEM e avisos preservados. |
-
-O modelo fornecido é o Tucano-160M, pré-treinado em português. Ele continua um
-texto iniciado pelo usuário; não é um modelo de chat nem uma fonte confiável de
-fatos. O contexto fornecido comporta 2048 tokens. Amostragem pode reduzir a
-repetição, mas não garante coerência de uma história inteira.
-
-Este repositório contém somente documentação de utilização e textos de licença.
-Os pacotes são fornecidos separadamente; a implementação da engine não integra
-este repositório. Confira `engine_run --version` e `engine_run --help`: builds
-anteriores identificados como 0.8.0 podem não oferecer `--sparse` e `--tree`.
 
 Distribuição e dependências: <https://deb.schip.com.br>.
 Contato comercial e suporte: **euricosalvesschmidt@gmail.com**.

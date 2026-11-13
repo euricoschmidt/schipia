@@ -126,3 +126,27 @@ para memória associativa, todos os arquivos com o prefixo escolhido. Guarde
 também o modelo e o vocabulário correspondentes, ou uma identificação da versão.
 Não edite arquivos internos. Consulte [Solução de problemas](SOLUCAO_DE_PROBLEMAS.md)
 se uma interrupção impedir a reabertura.
+
+
+## Templates de chat (`--chat` e `--system`)
+
+Para modelos instruídos ou conversacionais (como Qwen2, Llama-3, Mistral/ChatML),
+use `--chat` e `--system` em `engine_run`:
+
+```sh
+./bin/engine_run generate model.sct_model vocab.sct_tokens /var/tmp/chat.cache 1 \
+  --new --chat chatml --system "Você é um assistente técnico conciso." \
+  --prompt "Explique mmap em C em 3 linhas." \
+  --tokens 128 --temp 0.7 --top-p 0.9 --top-k 40 --repeat-penalty 1.1
+```
+
+Formatos suportados por `--chat`:
+- `chatml`: `<|im_start|>system ... <|im_end|>`, `<|im_start|>user ... <|im_end|>`, `<|im_start|>assistant`.
+- `llama3`: `<|begin_of_text|><|start_header_id|>...<|end_header_id|>`.
+
+## Execução esparsa, Out-of-Core e Prefix Caching
+
+- `--sparse <limiar>`: ativa a poda dinâmica de clusters FFN (32 neurônios por cluster).
+- `--out-of-core`: habilita `madvise(MADV_WILLNEED)` coalescido em lote sobre clusters ativos por camada, otimizando demand-paging direto do SSD/NVMe (recomendado com bundle `--tree --page-align`).
+- `--no-hot-cache`: desativa a retenção em RAM de clusters quentes quando desejado.
+- **Prefix Caching persistente**: o cache KV (`.sct_cache`) indexa automaticamente blocos de 8 tokens por hash na `libschiptree` (`kind=3`). Prompts e system prompts repetidos reutilizam o KV cache entre chamadas e sessões sem recomputar o prefill.

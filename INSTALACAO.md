@@ -1,10 +1,29 @@
 # Instalação e atualização
 
-Este manual acompanha o SchipIA **0.8.1**. A distribuição Debian descrita aqui
-destina-se a **Debian 13 (trixie), amd64**. O modelo fornecido é o Tucano-160M em
-português. Não é preciso instalar Python, PyTorch ou ferramentas de compilação.
+Este manual acompanha o SchipIA **0.8.1** (com binários, bibliotecas e SDK C
+incluídos neste repositório em `bin/`, `lib/` e `include/`). A distribuição Debian
+descrita abaixo destina-se a **Debian 13 (trixie), amd64**. Não é preciso instalar
+Python ou PyTorch.
 
-## Configurar o repositório Schip
+## Execução direta a partir deste repositório (`bin/` + `lib/`)
+
+Na raiz deste repositório, exporte `LD_LIBRARY_PATH` para carregar `libschipia.so`,
+`libschiptree.so.1.0` e `libschipjson.so`:
+
+```sh
+export LD_LIBRARY_PATH="$PWD/lib:${LD_LIBRARY_PATH:-}"
+./bin/engine_run demo /tmp/schipia-demo 42
+./bin/test_kernels
+./bin/bench_kernels
+```
+
+Para compilar uma aplicação C usando a biblioteca compartilhada:
+
+```sh
+cc minha_app.c -I./include -L./lib -Wl,-rpath,'$ORIGIN/lib' -lschipia -lschiptree -lm -fopenmp -o minha_app
+```
+
+## Configurar o repositório Schip (APT)
 
 O repositório oficial é <https://deb.schip.com.br>. Configure-o uma vez:
 
