@@ -1,6 +1,6 @@
 # Histórias, sessões e memória
 
-Para perguntar sobre seus aplicativos na central de ajuda 0.9.0, consulte
+Para perguntar sobre seus aplicativos na central de ajuda 0.10.0, consulte
 [HELPDESK.md](HELPDESK.md). Para integrar esse atendimento ao seu sistema,
 use [API.md](API.md). As instruções abaixo tratam da geração local no terminal.
 

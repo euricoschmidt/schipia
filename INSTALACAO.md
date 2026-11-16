@@ -1,15 +1,21 @@
 # Instalação e atualização
 
-A versão atual no repositório APT é **0.9.0**, para **Debian 13 (trixie), amd64**.
+A versão atual no repositório APT é **0.10.0**, para **Debian 13 (trixie), amd64**.
 Ela inclui a central de ajuda, seus manuais iniciais e o modelo de instruções
 em português. Não é preciso instalar Python ou PyTorch.
+
+Os novos Qwen de diálogo, programação e busca são opcionais e baixados
+separadamente com `schipia-models`. Consulte [Modelos](MODELOS.md) para instalar
+e ativar esses perfis. Atualizar o pacote preserva o estado e o atendimento
+existente; não ativa Qwen automaticamente. No subspace, esses perfis continuam
+na instância de laboratório, separada da central pública.
 
 Para usar a central já hospedada, acesse https://schipia.schip.com.br com sua
 chave autorizada, ou integre o aplicativo conforme [API.md](API.md).
 O aplicativo cliente não precisa instalar os modelos localmente.
 
 Para instalar ou atualizar uma central própria, configure o APT conforme a
-seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.9.0`.
+seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.10.0`.
 Confira com `dpkg-query -W schipia`. A instalação fornece a unidade
 `schipia-helpdesk.service`; ela precisa de um cadastro de clientes antes de
 iniciar. Siga [Administração](ADMINISTRACAO.md) para configurar as credenciais.
@@ -72,8 +78,8 @@ Este repositório público contém documentação; solicite o pacote ao forneced
 Na pasta em que recebeu o arquivo:
 
 ```sh
-dpkg-deb -f ./schipia_0.9.0_amd64.deb Package Version Architecture Depends
-sudo apt install ./schipia_0.9.0_amd64.deb
+dpkg-deb -f ./schipia_0.10.0_amd64.deb Package Version Architecture Depends
+sudo apt install ./schipia_0.10.0_amd64.deb
 engine_run --version
 engine_run --help
 ```

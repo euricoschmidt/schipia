@@ -1,4 +1,4 @@
-# Central de ajuda SchipIA 0.9.0
+# Central de ajuda SchipIA 0.10.0
 
 Acesse **https://schipia.schip.com.br**. Em **Acesso e contexto**, informe sua
 chave autorizada, aplicativo, versão e tela. Digite sua dúvida e clique em
@@ -27,6 +27,10 @@ Os diálogos ficam registrados no servidor. Uma avaliação positiva em
 o procedimento citado. Esse registro ajuda a recuperar o mesmo procedimento em
 perguntas futuras, sempre respeitando aplicativo, versão, perfil e organização.
 
+Nas instâncias com geração Qwen, uma resposta gerada marcada como útil cria
+uma sugestão pendente de revisão. Um curador precisa aprová-la antes de ela
+acrescentar conhecimento compartilhado.
+
 Uma resposta negativa deixa de promover essa associação. Se o texto do manual
 original mudou, a associação antiga não é aplicada automaticamente.
 
@@ -35,6 +39,10 @@ original mudou, a associação antiga não é aplicada automaticamente.
 Envie uma pergunta, um título e a informação para
 `POST /v1/helpdesk/contributions`. A contribuição é guardada imediatamente com
 estado `pending`. Ela ainda não é usada nas respostas compartilhadas.
+
+Também é possível iniciar uma pergunta por `aprenda:` ou
+`guarde esta informação:`. Confira `learning_candidate_id` na resposta da API
+e acompanhe a revisão; o envio não significa aprovação automática.
 
 Um perfil autorizado consulta `POST /v1/helpdesk/pending`, confere a informação
 no aplicativo e decide em `POST /v1/helpdesk/review`, com `approve` ou `reject`.
@@ -57,12 +65,17 @@ o diretório original e planeje seu arquivamento antes de iniciar uma nova memó
 
 ## Modelos e respostas
 
-O pacote inclui um Tucano-160M ajustado para instruções em português. O modelo
-ajuda a selecionar entre trechos pertinentes; as instruções exibidas ao usuário
-são retiradas da documentação autorizada, sem paráfrase livre do procedimento.
-Se a sugestão do modelo não for válida, vale a seleção documental. Isso reduz
-o risco de inventar comandos, telas ou permissões, mas não substitui a revisão
-da qualidade e atualização dos próprios manuais.
+O atendimento existente usa Tucano-160M para auxiliar a seleção de trechos
+da documentação. A versão 0.10.0 permite instalar Qwen3-4B para elaborar
+respostas em português, usando fontes autorizadas e o histórico recente,
+e um modelo de busca por significado para encontrar manuais relacionados.
+Confira as fontes: a geração pode errar e depende de manuais atualizados.
+
+Esses modelos e os dois perfis de programação estão ativos no **laboratório
+do subspace**. A central pública mantém o perfil anterior. A instalação do
+pacote não troca o atendimento automaticamente. Consulte [Modelos](MODELOS.md)
+para acesso e [API](API.md) para integrar respostas e programação. No laboratório,
+aguarde a conclusão: a geração em CPU pode levar dezenas de segundos.
 
 ## Aplicativos cobertos
 

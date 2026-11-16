@@ -1,5 +1,36 @@
 # Desempenho e escolha de configuração
 
+## Helpdesk e programação na versão 0.10.0
+
+Resultados do laboratório no subspace, Core i7-9700, Debian 13 / amd64,
+quatro threads de CPU. Qwen3-4B-Instruct-2507 em Q8 para diálogo e
+Qwen2.5-Coder-7B-Instruct em Q4 para programação. Os testes usaram o pacote
+0.10.0 instalado. A nova geração permanece no laboratório.
+
+| Medida | 0.9.0 | 0.10.0 |
+|---|---|---|
+| Critérios factuais atendidos, mesmas cinco perguntas | 3/5 | 5/5 |
+| Tempo médio dessas perguntas | 1,234 s | 28,797 s |
+
+A versão nova elabora respostas com contexto e tem maior custo de CPU.
+Em uma consulta para listar backups, os ciclos acumulados das quatro threads
+foram 24.249.658.026 na 0.9.0 e 244.166.864.985 na 0.10.0. Essa medida descreve
+uma consulta completa; não é uma taxa geral de ciclos por token.
+
+Na repetição de uma pergunta com resposta idêntica, o tempo caiu de 13,813 s
+para 6,135 s com reaproveitamento do contexto. Houve aprovação em 33/33 casos
+de recuperação e recusa e nos testes de autorização, isolamento e persistência.
+
+O Coder-7B passou em cinco exercícios C, com o código compilado e executado em
+contêineres isolados. As gerações levaram de 7,909 a 29,257 segundos. É uma
+amostra pequena: não representa uma garantia de correção para outros programas.
+O Coder-1.5B é uma alternativa menor, com mais falhas na avaliação realizada.
+
+Configure cliente e proxy para aguardar a geração; 180 segundos é um ponto
+de partida no laboratório. Veja [Modelos](MODELOS.md) e [API](API.md).
+
+## Geração local com o modelo legado Tucano
+
 Medições de 12/11/2026, Core i7-9700, Debian amd64, Tucano-160M, oito histórias
 em português e 806 previsões. Valores abaixo são medianas de três execuções com
 os mesmos textos e limites. Eles descrevem essa máquina e essa amostra; não são

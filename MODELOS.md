@@ -1,4 +1,103 @@
-# Escolha e conversão de modelos
+# Modelos para diálogo, busca e programação — 0.10.0
+
+Os perfis Qwen são opcionais e instalados separadamente do pacote `schipia`.
+Os aplicativos consultam a API central; seus usuários não precisam baixar os
+pesos. A instalação e o uso não exigem Python, PyTorch ou programas em C++.
+
+## Escolher o perfil
+
+| Instalação | Modelo | Formato padrão | Uso pela API |
+|---|---|---|---|
+| `qwen3` | Qwen3-4B-Instruct-2507 | Q8 | `schipia-helpdesk`, respostas sobre os manuais |
+| `coder` | Qwen2.5-Coder-7B-Instruct | Q4 | `schipia-coder`, assistência de programação |
+| `coder-fast` | Qwen2.5-Coder-1.5B-Instruct | Q8 | `schipia-coder-fast`, menor consumo e latência |
+| `embedding` | Qwen3-Embedding-0.6B | Q8 | Busca por significado usada pelo helpdesk |
+
+Prefira o Coder-7B quando a qualidade do código for prioritária. O perfil menor
+economiza recursos, mas pode cometer mais erros. Compare as medições em
+[Desempenho](DESEMPENHO.md); revise e teste qualquer código sugerido.
+
+## Baixar e instalar
+
+Instale primeiro `schipia=0.10.0` conforme [Instalação](INSTALACAO.md).
+Reserve dezenas de GB para baixar e converter os quatro modelos completos.
+
+```sh
+sudo schipia-models install qwen3 /var/lib/schipia-models
+sudo schipia-models install coder /var/lib/schipia-models
+sudo schipia-models install coder-fast /var/lib/schipia-models
+sudo schipia-models install embedding /var/lib/schipia-models
+```
+
+Uma instalação válida existente é reutilizada. Os diretórios de cada perfil
+são `qwen3`, `coder7`, `coder` e `embedding`, respectivamente. Mantenha cada
+diretório inteiro. Um quarto argumento opcional `4`, `8` ou `16` escolhe a
+precisão; os exemplos usam as configurações validadas acima.
+
+Cada modelo inclui registros `ORIGIN`, `LICENSE` e `SHA256SUMS`. Os quatro
+Qwen têm licença Apache 2.0; preserve seus avisos ao redistribuí-los.
+A licença da SchipIA permanece a mesma da libschiptree. O pacote também
+acompanha os avisos da licença Unicode dos dados utilizados.
+
+## Ativar em uma instância própria
+
+Com o serviço parado e backup de seu estado, gere o índice da base desejada:
+
+```sh
+schipia-helpdesk semantic-index /CAMINHO/knowledge /var/lib/schipia-models /CAMINHO/semantic
+```
+
+Configure estas variáveis no ambiente do serviço antes de iniciá-lo:
+
+```text
+SCHIPIA_MODELS=/var/lib/schipia-models
+SCHIPIA_SEMANTIC=/CAMINHO/semantic
+```
+
+A conta do serviço deve ler os modelos e o índice e gravar em seu próprio
+diretório de estado. Consulte [Administração](ADMINISTRACAO.md) para configurar
+a instância, as credenciais e o serviço. Sem a ativação desses perfis, o
+atendimento anterior continua disponível.
+
+Após atualizar os manuais ou o modelo de busca, regenere o índice semântico.
+Uma execução interrompida pode ser retomada com o mesmo comando, base e modelo.
+
+## Acessar o laboratório no subspace
+
+Os quatro perfis estão instalados no laboratório permanente em
+`/srv/schipia-lab/0.10.0`, com serviço `schipia-lab-010.service` e estado
+separado em `/var/lib/schipia-lab-010`. A API escuta em `127.0.0.1:8091`
+no servidor. A central pública em `https://schipia.schip.com.br` conserva
+seu perfil anterior; publicar o pacote não ativa Qwen nessa central.
+
+Para testar de um computador com acesso SSH autorizado:
+
+```sh
+ssh -N -L 18091:127.0.0.1:8091 root@subspace
+```
+
+Mantenha o túnel aberto e, em outro terminal, use
+`BASE_URL=http://127.0.0.1:18091`. As chamadas ainda exigem uma chave autorizada
+do aplicativo. Não copie credenciais para código público nem para o navegador.
+
+## Usar os modelos
+
+- `GET /v1/models`: consultar os perfis disponíveis na instância.
+- `POST /v1/helpdesk/answer`: perguntar usando manuais autorizados e histórico.
+- `POST /v1/helpdesk/code`: pedir código com `model` igual a `schipia-coder`
+  ou `schipia-coder-fast`; sem o campo, prefere o maior disponível.
+
+Veja exemplos e autenticação em [API](API.md). Use timeout de pelo menos
+180 segundos como ponto de partida em CPU. `answer` pode conter Markdown;
+`finish_reason=length` indica resposta truncada. Na programação,
+`executed=false`: a central não executa o código.
+
+Envie o histórico recente a cada pergunta. Informações iniciadas por `aprenda:`
+ou `guarde esta informação:` e respostas geradas avaliadas como úteis podem
+criar contribuições pendentes. Um curador precisa aprová-las antes de serem
+usadas em outros diálogos. Isso não retreina os pesos dos modelos.
+
+## Modelos legados para uso pelo terminal
 
 Os exemplos pressupõem `MODEL` e `STATE` definidos em [Instalação](INSTALACAO.md).
 Use diretórios novos para conversões e contextos diferentes para cada modelo.

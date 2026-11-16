@@ -1,4 +1,4 @@
-# Administrar uma central de ajuda SchipIA 0.9.0
+# Administrar uma central de ajuda SchipIA 0.10.0
 
 Para consumir a central hospedada em https://schipia.schip.com.br, basta uma
 chave de integração e os passos de [API.md](API.md). Este guia é para quem
@@ -6,7 +6,7 @@ administra o servidor ou instala uma central própria.
 
 ## Instalação e primeira configuração
 
-Instale `schipia=0.9.0` pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
+Instale `schipia=0.10.0` pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
 O pacote cria o usuário de serviço `schipia` e prepara a base inicial e o
 vocabulário em `/var/lib/schipia-helpdesk/`. As respostas e o aprendizado
 persistente ficam nesse servidor, compartilhados pelas integrações autorizadas.
@@ -64,6 +64,28 @@ sudo -u schipia schipia-helpdesk serve \
 Pare a unidade antes de executar esse comando: a memória admite um gravador
 por vez. Os últimos dois caminhos são opcionais; omita ambos para atendimento
 somente documental. O serviço instalado usa o modelo de instruções por padrão.
+
+## Ativar os modelos opcionais
+
+Siga [Modelos](MODELOS.md) para instalar Qwen3, os perfis de programação e o
+modelo de busca, gerar o índice semântico e definir `SCHIPIA_MODELS` e
+`SCHIPIA_SEMANTIC` no ambiente da instância. A conta do serviço deve ler os
+modelos e o índice e gravar apenas em seu próprio diretório de estado.
+
+Configure cliente e proxy com timeout de pelo menos 180 segundos como ponto
+de partida para geração em CPU. Um proxy de 25 segundos pode interromper a
+resposta antes de ela terminar. Verifique `GET /v1/models` autenticado antes
+de habilitar a programação no aplicativo.
+
+No subspace, mantenha `schipia-helpdesk.service` como central existente e
+`schipia-lab-010.service` como laboratório. O laboratório escuta somente em
+`127.0.0.1:8091`, usa `/var/lib/schipia-lab-010` para seu estado e mantém os
+arquivos em `/srv/schipia-lab/0.10.0`. Não exponha essa porta publicamente nem
+compartilhe o diretório de memória com a central. A publicação pelo APT
+distribui o pacote; não promove o laboratório para produção.
+
+Após atualizar os manuais ou o modelo de busca, regenere o índice semântico
+da instância. Faça backup e pare a instância antes de alterar sua base ativa.
 
 ## Importar e atualizar manuais
 
