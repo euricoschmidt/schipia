@@ -1,9 +1,23 @@
 # Instalação e atualização
 
-Este manual acompanha o SchipIA **0.8.1** (com binários, bibliotecas e SDK C
-incluídos neste repositório em `bin/`, `lib/` e `include/`). A distribuição Debian
-descrita abaixo destina-se a **Debian 13 (trixie), amd64**. Não é preciso instalar
-Python ou PyTorch.
+A versão atual no repositório APT é **0.9.0**, para **Debian 13 (trixie), amd64**.
+Ela inclui a central de ajuda, seus manuais iniciais e o modelo de instruções
+em português. Não é preciso instalar Python ou PyTorch.
+
+Para usar a central já hospedada, acesse https://schipia.schip.com.br com sua
+chave autorizada, ou integre o aplicativo conforme [API.md](API.md).
+O aplicativo cliente não precisa instalar os modelos localmente.
+
+Para instalar ou atualizar uma central própria, configure o APT conforme a
+seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.9.0`.
+Confira com `dpkg-query -W schipia`. A instalação fornece a unidade
+`schipia-helpdesk.service`; ela precisa de um cadastro de clientes antes de
+iniciar. Siga [Administração](ADMINISTRACAO.md) para configurar as credenciais.
+Atualizações preservam a memória, as chaves e uma base de manuais já existente.
+
+Os arquivos de execução direta e SDK presentes em `bin/`, `lib/` e `include/`
+pertencem ao kit existente, com versões próprias. As instruções a seguir sobre
+esses arquivos continuam disponíveis para esse modo de utilização.
 
 ## Execução direta a partir deste repositório (`bin/` + `lib/`)
 
@@ -58,8 +72,8 @@ Este repositório público contém documentação; solicite o pacote ao forneced
 Na pasta em que recebeu o arquivo:
 
 ```sh
-dpkg-deb -f ./schipia_0.8.1_amd64.deb Package Version Architecture Depends
-sudo apt install ./schipia_0.8.1_amd64.deb
+dpkg-deb -f ./schipia_0.9.0_amd64.deb Package Version Architecture Depends
+sudo apt install ./schipia_0.9.0_amd64.deb
 engine_run --version
 engine_run --help
 ```

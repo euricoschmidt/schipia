@@ -1,5 +1,10 @@
 # Servidor HTTP com streaming
 
+Para a central de ajuda **0.9.0**, com documentação dos aplicativos,
+autenticação, fontes e aprendizado persistente, consulte [API.md](API.md).
+A central hospedada usa https://schipia.schip.com.br. Este guia descreve
+o servidor separado de geração e completions, `schipia-server`.
+
 O servidor fornece continuação de texto por HTTP. Prepare `MODEL` e `STATE`
 conforme [Instalação](INSTALACAO.md). Para iniciar em primeiro plano:
 

@@ -1,5 +1,9 @@
 # Histórias, sessões e memória
 
+Para perguntar sobre seus aplicativos na central de ajuda 0.9.0, consulte
+[HELPDESK.md](HELPDESK.md). Para integrar esse atendimento ao seu sistema,
+use [API.md](API.md). As instruções abaixo tratam da geração local no terminal.
+
 Prepare `MODEL` e `STATE` como descrito em [Instalação](INSTALACAO.md).
 O modelo fornecido continua textos em português. Comece com um trecho de
 história; ele não é um assistente treinado para obedecer instruções de chat.
