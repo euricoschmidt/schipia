@@ -1,4 +1,4 @@
-# Modelos para diálogo, busca e programação — 0.10.0
+# Modelos para diálogo, busca e programação — 0.12.0
 
 Os perfis Qwen são opcionais e instalados separadamente do pacote `schipia`.
 Os aplicativos consultam a API central; seus usuários não precisam baixar os
@@ -19,7 +19,7 @@ economiza recursos, mas pode cometer mais erros. Compare as medições em
 
 ## Baixar e instalar
 
-Instale primeiro `schipia=0.10.0` conforme [Instalação](INSTALACAO.md).
+Instale primeiro `schipia=0.12.0` conforme [Instalação](INSTALACAO.md).
 Reserve dezenas de GB para baixar e converter os quatro modelos completos.
 
 ```sh
@@ -40,6 +40,24 @@ A licença da SchipIA permanece a mesma da libschiptree. O pacote também
 acompanha os avisos da licença Unicode dos dados utilizados.
 
 ## Ativar em uma instância própria
+
+### Usar um modelo Qwen em diretório SQT
+
+Os modelos `.qw` existentes continuam aceitos; a atualização não exige
+reconversão. Para criar uma cópia SQT e usá-la pelo terminal:
+
+```sh
+mkdir -p "$HOME/.local/share/schipia"
+schipia-qwen pack-tree /var/lib/schipia-models/qwen3/model.qw "$HOME/.local/share/schipia/qwen3.sqt"
+schipia-qwen verify-tree "$HOME/.local/share/schipia/qwen3.sqt"
+schipia-qwen generate "$HOME/.local/share/schipia/qwen3.sqt" /var/lib/schipia-models/qwen3/vocab.qw 'Explique como conferir um backup.' 64
+```
+
+O destino deve ser novo. Preserve o vocabulário e os avisos de licença do
+modelo de origem; mantenha o diretório SQT inteiro ao copiar ou fazer backup.
+A conversão preserva a precisão do modelo fornecido, sem torná-lo mais inteligente.
+
+### Configurar a central
 
 Com o serviço parado e backup de seu estado, gere o índice da base desejada:
 
@@ -65,19 +83,21 @@ Uma execução interrompida pode ser retomada com o mesmo comando, base e modelo
 ## Acessar o laboratório no subspace
 
 Os quatro perfis estão instalados no laboratório permanente em
-`/srv/schipia-lab/0.10.0`, com serviço `schipia-lab-010.service` e estado
-separado em `/var/lib/schipia-lab-010`. A API escuta em `127.0.0.1:8091`
-no servidor. A central pública em `https://schipia.schip.com.br` conserva
+`/srv/schipia-lab/0.12.0`, com serviço `schipia-lab-012.service` e estado
+separado em `/var/lib/schipia-lab-012`. A API escuta em `127.0.0.1:18093`
+no servidor. A instância reutiliza os modelos validados em
+`/srv/schipia-lab/0.11.0/trees`; preserve esse diretório ao fazer backup do laboratório.
+A central pública em `https://schipia.schip.com.br` conserva
 seu perfil anterior; publicar o pacote não ativa Qwen nessa central.
 
 Para testar de um computador com acesso SSH autorizado:
 
 ```sh
-ssh -N -L 18091:127.0.0.1:8091 root@subspace
+ssh -N -L 18093:127.0.0.1:18093 root@subspace
 ```
 
 Mantenha o túnel aberto e, em outro terminal, use
-`BASE_URL=http://127.0.0.1:18091`. As chamadas ainda exigem uma chave autorizada
+`BASE_URL=http://127.0.0.1:18093`. As chamadas ainda exigem uma chave autorizada
 do aplicativo. Não copie credenciais para código público nem para o navegador.
 
 ## Usar os modelos
@@ -88,7 +108,8 @@ do aplicativo. Não copie credenciais para código público nem para o navegador
   ou `schipia-coder-fast`; sem o campo, prefere o maior disponível.
 
 Veja exemplos e autenticação em [API](API.md). Use timeout de pelo menos
-180 segundos como ponto de partida em CPU. `answer` pode conter Markdown;
+300 segundos como ponto de partida para contextos maiores em CPU.
+`answer` pode conter Markdown;
 `finish_reason=length` indica resposta truncada. Na programação,
 `executed=false`: a central não executa o código.
 

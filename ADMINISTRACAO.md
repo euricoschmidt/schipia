@@ -1,4 +1,4 @@
-# Administrar uma central de ajuda SchipIA 0.10.0
+# Administrar uma central de ajuda SchipIA 0.12.0
 
 Para consumir a central hospedada em https://schipia.schip.com.br, basta uma
 chave de integração e os passos de [API.md](API.md). Este guia é para quem
@@ -6,7 +6,7 @@ administra o servidor ou instala uma central própria.
 
 ## Instalação e primeira configuração
 
-Instale `schipia=0.10.0` pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
+Instale `schipia=0.12.0` pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
 O pacote cria o usuário de serviço `schipia` e prepara a base inicial e o
 vocabulário em `/var/lib/schipia-helpdesk/`. As respostas e o aprendizado
 persistente ficam nesse servidor, compartilhados pelas integrações autorizadas.
@@ -72,15 +72,17 @@ modelo de busca, gerar o índice semântico e definir `SCHIPIA_MODELS` e
 `SCHIPIA_SEMANTIC` no ambiente da instância. A conta do serviço deve ler os
 modelos e o índice e gravar apenas em seu próprio diretório de estado.
 
-Configure cliente e proxy com timeout de pelo menos 180 segundos como ponto
-de partida para geração em CPU. Um proxy de 25 segundos pode interromper a
-resposta antes de ela terminar. Verifique `GET /v1/models` autenticado antes
+Configure cliente e proxy com timeout de 300 segundos como ponto de partida
+para contextos maiores em CPU e ajuste à carga. Um proxy de 25 segundos pode
+interromper a resposta antes de ela terminar. Verifique `GET /v1/models` autenticado antes
 de habilitar a programação no aplicativo.
 
 No subspace, mantenha `schipia-helpdesk.service` como central existente e
-`schipia-lab-010.service` como laboratório. O laboratório escuta somente em
-`127.0.0.1:8091`, usa `/var/lib/schipia-lab-010` para seu estado e mantém os
-arquivos em `/srv/schipia-lab/0.10.0`. Não exponha essa porta publicamente nem
+`schipia-lab-012.service` como laboratório 0.12.0. O laboratório escuta somente em
+`127.0.0.1:18093`, usa `/var/lib/schipia-lab-012` para seu estado e mantém os
+arquivos em `/srv/schipia-lab/0.12.0`. Os modelos são reutilizados de
+`/srv/schipia-lab/0.11.0/trees`, separados do estado da central. Preserve também
+esse diretório no backup do laboratório. Não exponha essa porta publicamente nem
 compartilhe o diretório de memória com a central. A publicação pelo APT
 distribui o pacote; não promove o laboratório para produção.
 

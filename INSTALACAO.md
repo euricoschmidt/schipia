@@ -1,6 +1,6 @@
 # Instalação e atualização
 
-A versão atual no repositório APT é **0.10.0**, para **Debian 13 (trixie), amd64**.
+A versão atual no repositório APT é **0.12.0**, para **Debian 13 (trixie), amd64**.
 Ela inclui a central de ajuda, seus manuais iniciais e o modelo de instruções
 em português. Não é preciso instalar Python ou PyTorch.
 
@@ -15,11 +15,18 @@ chave autorizada, ou integre o aplicativo conforme [API.md](API.md).
 O aplicativo cliente não precisa instalar os modelos localmente.
 
 Para instalar ou atualizar uma central própria, configure o APT conforme a
-seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.10.0`.
+seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.12.0`.
 Confira com `dpkg-query -W schipia`. A instalação fornece a unidade
 `schipia-helpdesk.service`; ela precisa de um cadastro de clientes antes de
 iniciar. Siga [Administração](ADMINISTRACAO.md) para configurar as credenciais.
 Atualizações preservam a memória, as chaves e uma base de manuais já existente.
+
+A versão 0.12.0 processa prompts maiores dos Qwen com menos tempo e ciclos,
+sem exigir nova conversão dos modelos `.qw` já utilizados. Diretórios SQT
+também são aceitos. As melhorias são aplicadas automaticamente no hardware
+compatível; não há um novo parâmetro obrigatório. Faça backup do estado antes
+de atualizar uma instância própria e confira `engine_run --version` ao terminar.
+Consulte [Desempenho](DESEMPENHO.md) para dimensionar RAM e timeout.
 
 Os arquivos de execução direta e SDK presentes em `bin/`, `lib/` e `include/`
 pertencem ao kit existente, com versões próprias. As instruções a seguir sobre
@@ -78,8 +85,8 @@ Este repositório público contém documentação; solicite o pacote ao forneced
 Na pasta em que recebeu o arquivo:
 
 ```sh
-dpkg-deb -f ./schipia_0.10.0_amd64.deb Package Version Architecture Depends
-sudo apt install ./schipia_0.10.0_amd64.deb
+dpkg-deb -f ./schipia_0.12.0_amd64.deb Package Version Architecture Depends
+sudo apt install ./schipia_0.12.0_amd64.deb
 engine_run --version
 engine_run --help
 ```

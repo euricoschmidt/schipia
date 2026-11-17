@@ -1,6 +1,6 @@
 # SchipIA — central de ajuda e distribuição binária
 
-Versão atual pelo APT: **0.10.0**, para Debian 13 / amd64.
+Versão atual pelo APT: **0.12.0**, para Debian 13 / amd64.
 A central está disponível em **https://schipia.schip.com.br**, com HTTPS,
 autenticação e uma base compartilhada de documentação dos aplicativos.
 
@@ -9,25 +9,28 @@ a encontrar procedimentos em perguntas futuras. Informações novas podem ser
 contribuídas e passam a ser utilizadas após aprovação de um curador.
 O aprendizado fica na base persistente; os pesos não são retreinados a cada conversa.
 
-A versão 0.10.0 acrescenta modelos opcionais Qwen para diálogo, busca semântica
-e programação, incluindo `POST /v1/helpdesk/code`. Os pesos são baixados
-separadamente. A atualização do pacote preserva o atendimento existente.
-Os novos modelos permanecem ativados no **laboratório do subspace**, separado
-da central pública. Veja [Modelos](MODELOS.md) para instalar, acessar o laboratório
-e escolher entre os perfis disponíveis.
+A versão 0.12.0 reduz o tempo de processamento de prompts maiores nos Qwen,
+mantendo baixo consumo de RAM. Não exige mudanças nas chamadas da API.
+Veja as medições e os limites em [Desempenho](DESEMPENHO.md).
+
+Os modelos opcionais atendem diálogo, busca semântica e programação, incluindo
+`POST /v1/helpdesk/code`. Os pesos são baixados separadamente e podem ser
+convertidos para diretórios SQT. O **laboratório 0.12.0 do subspace** permanece
+separado da central pública; publicar o pacote não promove esse laboratório
+para produção. Veja [Modelos](MODELOS.md) para instalar e testar.
 
 | O que você precisa fazer | Guia |
 |---|---|
 | Usar a central, perguntar e contribuir | [Central de ajuda](HELPDESK.md) |
 | Integrar o prompt de ajuda ao seu aplicativo | [API do helpdesk](API.md) |
-| Instalar e atualizar a versão 0.10.0 | [Instalação](INSTALACAO.md) |
+| Instalar e atualizar a versão 0.12.0 | [Instalação](INSTALACAO.md) |
 | Usar os novos modelos e a API de programação | [Modelos](MODELOS.md) e [API](API.md) |
 | Administrar uma central própria e seus manuais | [Administração](ADMINISTRACAO.md) |
 | Usar geração local e a API de completions | [Terminal](USO.md) e [HTTP](HTTP.md) |
 
 Este repositório reúne documentação de uso, binários e interfaces públicas.
 Os arquivos existentes do kit SDK têm suas próprias versões; para instalar
-a central 0.10.0, use o APT conforme abaixo. Nenhum checkout privado é necessário.
+a central 0.12.0, use o APT conforme abaixo. Nenhum checkout privado é necessário.
 
 ## Instalação e atualização pelo APT (Debian 13 / amd64)
 

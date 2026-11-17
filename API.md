@@ -1,12 +1,12 @@
-# API de ajuda e programação — SchipIA 0.10.0
+# API de ajuda e programação — SchipIA 0.12.0
 
 Base: **https://schipia.schip.com.br**. O aplicativo envia a dúvida para essa
 central e recebe uma resposta documental, com a fonte e o contexto autorizado.
 Não precisa instalar o modelo no computador ou navegador de cada usuário.
 
 Os novos modelos de diálogo e programação estão ativos no laboratório do
-subspace, em `http://127.0.0.1:8091` naquele servidor. A central pública mantém
-seu perfil anterior. Para testar a API 0.10.0, use uma instância com os modelos
+subspace, em `http://127.0.0.1:18093` naquele servidor. A central pública mantém
+seu perfil anterior. Para testar a API 0.12.0, use uma instância com os modelos
 ativados ou o túnel descrito em [Modelos](MODELOS.md). Atualizar o pacote não
 ativa os modelos automaticamente.
 
@@ -110,7 +110,7 @@ título na interface. O `original_url` é a referência de origem do documento.
 Exemplo no laboratório com túnel SSH aberto:
 
 ```sh
-BASE_URL=http://127.0.0.1:18091
+BASE_URL=http://127.0.0.1:18093
 curl --fail-with-body --silent --show-error \
   --config /caminho/privado/schipia.curl "$BASE_URL/v1/models"
 ```
@@ -144,7 +144,7 @@ de aplicativo, versão e tela precisam continuar autorizados pela chave.
 Salve o corpo acima como `pergunta.json` no backend e envie:
 
 ```sh
-curl --fail-with-body --silent --show-error --max-time 180 \
+curl --fail-with-body --silent --show-error --max-time 300 \
   --config /caminho/privado/schipia.curl \
   --header 'Content-Type: application/json' --data-binary @pergunta.json \
   "$BASE_URL/v1/helpdesk/code"
@@ -257,9 +257,10 @@ O modelo de instruções aumenta o tempo de consulta em relação à busca
 documental. Para verificar ou alterar o modo de operação, fale com o
 administrador da central.
 
-Em instâncias com os novos modelos, configure **pelo menos 180 segundos** de
-timeout no cliente e no proxy como ponto de partida. Mostre progresso e trate
-interrupções: a geração em CPU pode levar dezenas de segundos. Uma integração
+Em instâncias com os novos modelos, comece com **300 segundos** de timeout no
+cliente e no proxy para contextos maiores e ajuste à sua carga. O limite não
+garante que toda consulta termine nesse prazo. Mostre progresso e trate
+interrupções: a geração em CPU pode levar minutos. Uma integração
 antiga com timeout de 25 segundos pode precisar de ajuste antes de usar o laboratório.
 
 Veja [Administração](ADMINISTRACAO.md) para configurar credenciais, importar

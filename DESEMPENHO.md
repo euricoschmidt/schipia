@@ -1,5 +1,47 @@
 # Desempenho e escolha de configuração
 
+## Atualização 0.12.0 e contextos maiores
+
+Atualize pelo APT e mantenha os modelos existentes. O processamento dos prompts
+Qwen foi otimizado automaticamente nas CPUs AVX2/FMA compatíveis. As demais
+CPUs continuam usando o caminho compatível. Não é necessário mudar a API.
+
+Medições de 16/11/2026 no subspace: Debian 13, Core i7-9700, quatro núcleos,
+três repetições por caso. Comparação com a 0.11.0 do laboratório, com os mesmos
+modelos e pesos. O tempo de prompt exclui a geração; os ciclos incluem a execução
+completa. Foram gerados 64 tokens; embedding não gera texto.
+
+| Perfil e entrada | Redução do tempo de prompt | Redução dos ciclos totais | Aumento do pico de RAM |
+|---|---:|---:|---:|
+| Embedding 0,6B Q8, 512 tokens | 1,7% | 2,0% | 6,6 MiB |
+| Coder 1,5B Q8, 512 tokens | 10,5% | 6,5% | 12,6 MiB |
+| Qwen3-4B Q8, 512 tokens | 13,0% | 9,0% | 1,2 MiB |
+| Coder 7B Q4, 512 tokens | 22,7% | 18,5% | 11,7 MiB |
+| Qwen3-4B Q8, 2.000 tokens | 8,7% | 8,0% | 0,7 MiB |
+
+Contra llama.cpp, com os mesmos pesos e quatro núcleos:
+
+| Perfil e entrada | SchipIA: total | llama.cpp: total | SchipIA: pico RAM | llama.cpp: pico RAM |
+|---|---:|---:|---:|---:|
+| Coder 1,5B Q8, 512 tokens | 8,69 s | 8,43 s | 1.705 MiB | 1.890 MiB |
+| Qwen3-4B Q8, 512 tokens | 24,25 s | 23,51 s | 4.381 MiB | 5.343 MiB |
+| Coder 7B Q4, 512 tokens | 32,35 s | 28,20 s | 3.938 MiB | 8.504 MiB |
+| Qwen3-4B Q8, 2.000 tokens | 108,50 s | 72,61 s | 4.813 MiB | 5.425 MiB |
+
+O llama.cpp foi mais rápido nos contextos longos medidos; a SchipIA utilizou
+menos RAM. Os números incluem abertura e geração e não são latências de HTTP.
+O pico de RAM do processo não equivale à memória estável de uma central.
+
+As 15 comparações de saída da SchipIA anterior com a nova coincidiram.
+Na comparação de qualidade com llama.cpp, ambos obtiveram 5/5 no helpdesk,
+4/5 no Coder 1,5B, 5/5 no Coder 7B e 3/3 na busca por embeddings.
+São amostras pequenas; não garantem a correção de respostas futuras.
+
+Para diálogos maiores, comece com timeout de 300 segundos no cliente e no proxy
+e ajuste à carga. Envie apenas histórico e documentos necessários. Os resultados
+foram obtidos no laboratório separado, acessível conforme [Modelos](MODELOS.md);
+a publicação do pacote não troca os modelos da central pública.
+
 ## Helpdesk e programação na versão 0.10.0
 
 Resultados do laboratório no subspace, Core i7-9700, Debian 13 / amd64,
