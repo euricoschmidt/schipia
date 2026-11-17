@@ -13,11 +13,12 @@ A versão 0.12.0 reduz o tempo de processamento de prompts maiores nos Qwen,
 mantendo baixo consumo de RAM. Não exige mudanças nas chamadas da API.
 Veja as medições e os limites em [Desempenho](DESEMPENHO.md).
 
-Os modelos opcionais atendem diálogo, busca semântica e programação, incluindo
+Os modelos Qwen estão ativos na central pública para diálogo, busca semântica
+e programação, incluindo
 `POST /v1/helpdesk/code`. Os pesos são baixados separadamente e podem ser
-convertidos para diretórios SQT. O **laboratório 0.12.0 do subspace** permanece
-separado da central pública; publicar o pacote não promove esse laboratório
-para produção. Veja [Modelos](MODELOS.md) para instalar e testar.
+convertidos para diretórios SQT em uma instalação própria. O **laboratório
+0.12.0 do subspace** permanece separado da central, com modelos, base e memória
+independentes. Veja [Modelos](MODELOS.md) para instalar e testar.
 
 | O que você precisa fazer | Guia |
 |---|---|

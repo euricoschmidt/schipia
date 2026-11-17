@@ -4,11 +4,11 @@ Base: **https://schipia.schip.com.br**. O aplicativo envia a dúvida para essa
 central e recebe uma resposta documental, com a fonte e o contexto autorizado.
 Não precisa instalar o modelo no computador ou navegador de cada usuário.
 
-Os novos modelos de diálogo e programação estão ativos no laboratório do
-subspace, em `http://127.0.0.1:18093` naquele servidor. A central pública mantém
-seu perfil anterior. Para testar a API 0.12.0, use uma instância com os modelos
-ativados ou o túnel descrito em [Modelos](MODELOS.md). Atualizar o pacote não
-ativa os modelos automaticamente.
+Os modelos Qwen de diálogo, busca e programação estão ativos na central pública
+com SchipIA 0.12.0. O laboratório do subspace continua separado, em
+`http://127.0.0.1:18093` naquele servidor, acessível pelo túnel descrito em
+[Modelos](MODELOS.md). Atualizar o pacote em uma instância própria não ativa
+os modelos automaticamente.
 
 ## Autenticação e contexto
 

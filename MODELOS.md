@@ -87,8 +87,9 @@ Os quatro perfis estão instalados no laboratório permanente em
 separado em `/var/lib/schipia-lab-012`. A API escuta em `127.0.0.1:18093`
 no servidor. A instância reutiliza os modelos validados em
 `/srv/schipia-lab/0.11.0/trees`; preserve esse diretório ao fazer backup do laboratório.
-A central pública em `https://schipia.schip.com.br` conserva
-seu perfil anterior; publicar o pacote não ativa Qwen nessa central.
+A central pública em `https://schipia.schip.com.br` já usa a versão 0.12.0 com
+Qwen3-4B, Coder-7B, Coder-1.5B e busca semântica. Ela mantém seus próprios modelos
+em `/srv/schipia-models/qwen-0.12.0`, índice, base e memória de produção.
 
 Para testar de um computador com acesso SSH autorizado:
 

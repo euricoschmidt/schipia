@@ -40,7 +40,7 @@ São amostras pequenas; não garantem a correção de respostas futuras.
 Para diálogos maiores, comece com timeout de 300 segundos no cliente e no proxy
 e ajuste à carga. Envie apenas histórico e documentos necessários. Os resultados
 foram obtidos no laboratório separado, acessível conforme [Modelos](MODELOS.md);
-a publicação do pacote não troca os modelos da central pública.
+a central pública também usa Qwen na versão 0.12.0, com base e estado próprios.
 
 ## Helpdesk e programação na versão 0.10.0
 

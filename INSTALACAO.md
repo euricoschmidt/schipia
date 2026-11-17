@@ -7,8 +7,8 @@ em português. Não é preciso instalar Python ou PyTorch.
 Os novos Qwen de diálogo, programação e busca são opcionais e baixados
 separadamente com `schipia-models`. Consulte [Modelos](MODELOS.md) para instalar
 e ativar esses perfis. Atualizar o pacote preserva o estado e o atendimento
-existente; não ativa Qwen automaticamente. No subspace, esses perfis continuam
-na instância de laboratório, separada da central pública.
+existente; não ativa Qwen automaticamente em uma instalação própria. No subspace,
+a central pública já usa Qwen na versão 0.12.0, com laboratório separado.
 
 Para usar a central já hospedada, acesse https://schipia.schip.com.br com sua
 chave autorizada, ou integre o aplicativo conforme [API.md](API.md).
