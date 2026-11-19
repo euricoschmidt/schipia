@@ -1,0 +1,7 @@
+/build/
+/examples/data-*/
+/examples/[0-9][0-9]-*
+!/examples/*.c
+*.o
+core
+/debs/schipia_0.14.0+schip1_amd64.deb

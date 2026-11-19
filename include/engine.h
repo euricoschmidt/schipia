@@ -50,6 +50,8 @@ sct_engine_metrics sct_engine_measurements(const sct_engine *);
 int sct_engine_set_sparsity(sct_engine *,float threshold);
 float sct_engine_get_sparsity(const sct_engine *);
 int sct_engine_new_sequence(sct_engine *,uint64_t sequence);
+int sct_engine_embed(sct_engine *,const void *text,size_t size,float *out,size_t dim);
+int sct_engine_set_json_mode(sct_engine *,int enabled);
 int sct_engine_checkpoint(sct_engine *);
 
 void sct_engine_close(sct_engine *);

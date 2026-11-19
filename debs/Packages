@@ -1,0 +1,85 @@
+Package: libschipbase
+Version: 0.5.15+schip4
+Architecture: amd64
+Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
+Pre-Depends: python3
+Depends: libc6 (>= 2.38), libssl3t64 (>= 3.0.0), zlib1g (>= 1:1.1.4)
+Conflicts: libschip-base
+Replaces: libschip-base
+Provides: libschipbase-abi-2, libschip-base (= 0.5.15+schip4), libschip-base-abi-2
+Filename: ./libschipbase_0.5.15+schip4_amd64.deb
+Size: 83488
+MD5sum: f492a5dccde45299c9401f320d0c1b95
+SHA1: c51aec3fad777583d7b5b375ba0d9775a8c534f3
+SHA256: 57c0022b2d05a7ff0343aa4793de138760e6dd1ea16c7b080b41e41c94752222
+Section: libs
+Priority: optional
+Description: Biblioteca compartilhada libschipbase do ambiente Schip
+
+Package: libschipbase-dev
+Version: 0.5.15+schip4
+Architecture: amd64
+Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
+Pre-Depends: python3
+Depends: libc6-dev, libschipbase (= 0.5.15+schip4), libssl-dev, zlib1g-dev
+Filename: ./libschipbase-dev_0.5.15+schip4_amd64.deb
+Size: 80888
+MD5sum: d1752603e996ec85ae6cf8f5761cfab4
+SHA1: a122295459e8af6191d680cb08de03c6da83da6f
+SHA256: 903773933e0353e33f01a2f5e908148c8acaad5c0e7a266c365474b50662f5e7
+Section: libs
+Priority: optional
+Description: Headers e bibliotecas estaticas de libschipbase
+
+Package: libschiptree
+Version: 1.0.0+schip4
+Architecture: amd64
+Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
+Pre-Depends: python3
+Depends: libc6 (>= 2.34)
+Conflicts: libschiptree1
+Breaks: libschip (<< 0.5.15+schip1), libschiptree-dev (<< 1.0.0+schip1)
+Replaces: libschip (<< 0.5.15+schip1)
+Provides: libschiptree-abi-1, libschiptree1 (= 1.0.0)
+Filename: ./libschiptree_1.0.0+schip4_amd64.deb
+Size: 39104
+MD5sum: 434d49b917b846ba9769d1e8420bcd04
+SHA1: 2a29b3ecbd25485dc47fb96d1938046d92903028
+SHA256: 6c101e14b6adffa91d98abc048bde00e5d836388eaf57bc3cff9a73829cad8e5
+Section: libs
+Priority: optional
+Description: Biblioteca compartilhada libschiptree do ambiente Schip
+
+Package: libschiptree-dev
+Version: 1.0.0+schip4
+Architecture: amd64
+Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
+Pre-Depends: python3
+Depends: libc6-dev, libschiptree (= 1.0.0+schip4)
+Filename: ./libschiptree-dev_1.0.0+schip4_amd64.deb
+Size: 46736
+MD5sum: 49ef78d6ed630a66b41a84b6e7b4dbd7
+SHA1: 1d45e30cf02ae63094b8a5cf3d4fea8d20a2191d
+SHA256: f54b84fd73dc7a1f39aa6d71d31698b9c01900bcde937f5e8bc5353a4cc0e59b
+Section: libs
+Priority: optional
+Description: Headers e bibliotecas estaticas de libschiptree
+
+Package: schipia
+Version: 0.14.0+schip1
+Architecture: amd64
+Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
+Depends: adduser, libc6 (>= 2.38), libgomp1, libgomp1 (>= 6), libschipbase (>= 0.5.15+schip4), libschipbase-abi-2, libschiptree (>= 1.0.0+schip4), libschiptree-abi-1
+Conflicts: schipia-phase1, schipia-phase2, schipia-phase3, schipia-phase4, schipia-phase5
+Replaces: schipia-phase1, schipia-phase2, schipia-phase3, schipia-phase4, schipia-phase5
+Filename: ./schipia_0.14.0+schip1_amd64.deb
+Size: 466975780
+MD5sum: 297308f792431ffb0831541e7d1a0035
+SHA1: eb5f07bcbdcd29d84b2cfe82bd4583db9221b15f
+SHA256: 1d76b7de83a286f20262952d7a7bfcb2b57e1d5a7908823d93837f787e2a5a5f
+Section: science
+Priority: optional
+Description: SchipIA trained C language model with persistent memory
+ Tucano 160M Portuguese weights in lossless bfloat16; optional 8-bit packing, exact ranked BPE tokenizer and hybrid KV index.
+ Includes interactive generation, checkpoint/resume and quality evaluation.
+

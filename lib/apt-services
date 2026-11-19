@@ -1,0 +1,109 @@
+#!/bin/sh
+# APT protocol v2: quiesce running Schip consumers before any package is unpacked.
+set -eu
+# New packages own a persistent cold-backup barrier. Bootstrap preinst also
+# imports the legacy state below on the first upgrade from older hooks.
+manager=/usr/lib/schip/schip-package-upgrade.py
+if [ -x "$manager" ]; then
+    case "${1:-pre}" in
+        pre) exec python3 "$manager" apt pre ;;
+        post|resume)
+            if [ -f /var/lib/schip/package-maintenance/active.json ]; then
+                exec python3 "$manager" apt post
+            fi ;;
+    esac
+fi
+state=/var/lib/schip/apt-maintenance
+install -d -m 0700 "$state"
+exec 9>"$state/lock"
+flock 9
+work=$(mktemp -d "$state/work.XXXXXX")
+trap 'rm -rf "$work"' EXIT HUP INT TERM
+
+consumers() {
+    dbroot=/var/lib/schipmyserver
+    if [ -f /etc/schipmyserverd.conf ]; then
+        configured=$(sed -n 's/^SCHIP_DBROOT=//p' /etc/schipmyserverd.conf | tail -1)
+        [ -z "$configured" ] || dbroot=$configured
+    fi
+    for proc in /proc/[0-9]*; do
+        if ! grep -Eq '/(libschip[^/ ]*|libdbhtml)\.so' "$proc/maps" 2>/dev/null; then
+            ls -l "$proc/fd" 2>/dev/null | grep -Fq " $dbroot/" || continue
+        fi
+        [ -d "$proc" ] || continue
+        unit=$(sed -n 's|^.*:/system.slice/\([^/]*\.service\)\(/.*\)\{0,1\}$|\1|p' "$proc/cgroup" 2>/dev/null) || unit=''
+        [ -d "$proc" ] || continue
+        if [ -z "$unit" ]; then
+            echo "schip-apt: PID ${proc##*/} usa Schip fora de um servico systemd; pare-o e repita o APT." >&2
+            return 1
+        fi
+        printf '%s\n' "$unit"
+    done
+}
+
+case "${1:-pre}" in
+pre)
+    IFS= read -r protocol
+    [ "$protocol" = 'VERSION 2' ] || { echo 'schip-apt: protocolo APT inesperado.' >&2; exit 1; }
+    while IFS= read -r line && [ -n "$line" ]; do :; done
+    : > "$work/expected"
+    while read -r package old direction version action; do
+        case "$action" in '**REMOVE**') continue ;; esac
+        case "$package" in *-dev) continue ;; esac
+        case "$package" in
+            libschip*|libdbhtml|schipmyserver|trader-schip|schippay|schipay-preview|vaiterbolo|jvelha3d|schip-mcpserver|schiptrade|schip-tests|address|bet|bitfinex|fipe)
+                printf '%s %s\n' "$package" "$version" >> "$work/expected" ;;
+        esac
+    done
+    [ -s "$work/expected" ] || exit 0
+    # Refuse unmanaged consumers before stopping any service.
+    consumers > "$work/units"
+    sort -u "$work/units" -o "$work/units"
+    : > "$work/active"
+    while IFS= read -r unit; do
+        if systemctl is-active --quiet "$unit"; then printf '%s\n' "$unit" >> "$work/active"; fi
+    done < "$work/units"
+    touch "$state/units" "$state/expected"
+    cat "$state/expected" "$work/expected" | awk '{v[$1]=$2} END {for (p in v) print p, v[p]}' > "$work/merged"
+    mv "$work/merged" "$state/expected"
+    cat "$state/units" "$work/active" | sort -u > "$work/merged"
+    mv "$work/merged" "$state/units"
+    while IFS= read -r unit; do
+        [ -n "$unit" ] || continue
+        echo "schip-apt: parando $unit antes de atualizar."
+        systemctl stop "$unit"
+    done < "$work/units"
+    consumers > "$work/remaining"
+    if [ -s "$work/remaining" ]; then
+        echo 'schip-apt: consumidores reapareceram; atualizacao interrompida. Consulte o estado em /var/lib/schip/apt-maintenance.' >&2
+        exit 1
+    fi
+    ;;
+post|resume)
+    [ -f "$state/expected" ] || exit 0
+    pending=$(dpkg --audit)
+    if [ -n "$pending" ]; then
+        echo 'schip-apt: pacotes pendentes; servicos parados permanecem registrados. Corrija o erro e repita apt install ou apt --fix-broken install.' >&2
+        exit 1
+    fi
+    while read -r package version; do
+        actual=$(dpkg-query -W -f='${db:Status-Status} ${Version}' "$package" 2>/dev/null) || actual=missing
+        if [ "$actual" != "installed $version" ]; then
+            echo "schip-apt: $package ainda nao esta configurado na versao $version; servicos nao retomados." >&2
+            exit 1
+        fi
+    done < "$state/expected"
+    if [ -s "$state/units" ]; then
+        ldconfig
+        systemctl daemon-reload
+        # Restart the SQL server first when it was running before the upgrade.
+        { grep -Fx schipmyserverd.service "$state/units" || :; grep -Fxv schipmyserverd.service "$state/units" || :; } > "$work/restart"
+        while IFS= read -r unit; do
+            echo "schip-apt: retomando $unit com as bibliotecas atualizadas."
+            systemctl restart "$unit"
+        done < "$work/restart"
+    fi
+    rm -f "$state/units" "$state/expected"
+    ;;
+*) echo 'Uso: schip-apt-services [pre|post|resume]' >&2; exit 2 ;;
+esac

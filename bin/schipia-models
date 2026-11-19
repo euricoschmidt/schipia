@@ -1,0 +1,39 @@
+#!/bin/sh
+# Downloads and conversion orchestration only; inference/tokenization use native C.
+set -eu
+if test "${1:-}" = list; then printf '%s\n' qwen3 coder coder-fast embedding; exit 0; fi
+test "$#" -ge 3 && test "$1" = install || { echo 'Uso: schipia-models list | install qwen3|coder|coder-fast|embedding DIRETORIO [4|8|16]' >&2; exit 2; }
+case "$2" in
+ qwen3) repo=Qwen/Qwen3-4B-Instruct-2507; revision=cdbee75f17c01a7cc42f958dc650907174af0554; profile=qwen3; default=8;;
+ coder) repo=Qwen/Qwen2.5-Coder-7B-Instruct; revision=c03e6d358207e414f1eca0bb1891e29f1db0e242; profile=coder7; default=4;;
+ coder-fast) repo=Qwen/Qwen2.5-Coder-1.5B-Instruct; revision=2e1fd397ee46e1388853d2af2c993145b0f1098a; profile=coder; default=8;;
+ embedding) repo=Qwen/Qwen3-Embedding-0.6B; revision=97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3; profile=embedding; default=8;;
+ *) echo 'Perfil desconhecido' >&2; exit 2;;
+esac
+bits=${4:-$default}
+case "$bits" in 4|8|16) :;; *) echo 'Compactação deve ser 4, 8 ou 16' >&2; exit 2;; esac
+target=$3/$profile
+source=$3/.downloads/$profile
+if test -e "$target/model.qw"; then schipia-qwen check "$target/model.qw" "$target/vocab.qw"; exit 0; fi
+mkdir -p "$source" "$target"
+fetch(){
+ name=$1
+ test -s "$source/$name" && return 0
+ curl -4 -fL --retry 3 --connect-timeout 20 --max-time 7200 "https://huggingface.co/$repo/resolve/$revision/$name" -o "$source/$name.part" || return 1
+ mv "$source/$name.part" "$source/$name"
+}
+fetch config.json
+fetch tokenizer.json
+fetch README.md
+if fetch model.safetensors.index.json; then
+ /usr/libexec/schipia/model-metadata shards "$source/model.safetensors.index.json" > "$source/shards.txt"
+else printf '%s\n' model.safetensors > "$source/shards.txt"; fi
+while IFS= read -r shard; do fetch "$shard"; done < "$source/shards.txt"
+test -s "$target/vocab.qw" || schipia-qwen vocab "$source/tokenizer.json" "$target/vocab.qw"
+schipia-qwen import "$source" "$target/model.qw" "$bits"
+schipia-qwen check "$target/model.qw" "$target/vocab.qw"
+cp "$source/README.md" "$target/UPSTREAM.md"
+cp /usr/share/common-licenses/Apache-2.0 "$target/LICENSE"
+printf '%s\n%s\nbits=%s\n' "$repo" "$revision" "$bits" > "$target/ORIGIN"
+sha256sum "$target/model.qw" "$target/vocab.qw" > "$target/SHA256SUMS"
+printf 'Modelo instalado: %s\n' "$target"

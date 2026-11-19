@@ -84,6 +84,18 @@ int sct_matvec_rows_q4_batch(const uint8_t *w, const float *x, float *y, size_t 
 int sct_matvec_rows_q8_batch(const uint8_t *w, const float *x, float *y, size_t m, size_t rows, size_t columns, size_t x_stride, size_t y_stride);
 int sct_matvec_qkv_q4(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t rows_q, size_t rows_kv, size_t columns);
 int sct_ffn_gate_up_swiglu_q4(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t rows, size_t columns);
+/* Repacked 4-row interleaved Q4_4x format (72 bytes per 4 rows x 32 cols + standard Q4 tail). */
+size_t sct_q4p_matrix_bytes(size_t rows, size_t columns);
+void sct_q4_quantize_row_mse(const float *w, uint8_t *row, size_t columns);
+void sct_q4p_pack_matrix(const float *wide, uint8_t *out, size_t rows, size_t columns);
+int sct_matvec_rows_q4p(const uint8_t *w, const float *x, float *y, size_t rows, size_t columns);
+int sct_matvec_rows_q4p_scalar(const uint8_t *w, const float *x, float *y, size_t rows, size_t columns);
+int sct_matvec_qkv_q4p(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t rows_q, size_t rows_kv, size_t columns);
+int sct_ffn_gate_up_swiglu_q4p(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t rows, size_t columns);
+int sct_matvec_rows_q4p_batch(const uint8_t *w, const float *x, float *y, size_t m, size_t rows, size_t columns, size_t x_stride, size_t y_stride);
+int sct_q4_qkv_batch(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t m, size_t rows_q, size_t rows_kv, size_t columns, size_t x_stride);
+int sct_q4_gate_up_swiglu_batch(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t m, size_t rows, size_t columns, size_t x_stride);
+int sct_matvec_rows_q4_batch_i8(const uint8_t *w, const float *x, float *y, size_t m, size_t rows, size_t columns, size_t x_stride, size_t y_stride);
 
 
 /* Softmax is stable (subtract max), RMSNorm uses double sum-of-squares:

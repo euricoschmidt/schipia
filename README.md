@@ -1,37 +1,7 @@
-# SchipIA — central de ajuda e distribuição binária
+# schipia: distribuição binária
 
-Versão atual pelo APT: **0.12.0**, para Debian 13 / amd64.
-A central está disponível em **https://schipia.schip.com.br**, com HTTPS,
-autenticação e uma base compartilhada de documentação dos aplicativos.
-
-Faça perguntas, consulte as fontes e avalie as respostas. As avaliações ajudam
-a encontrar procedimentos em perguntas futuras. Informações novas podem ser
-contribuídas e passam a ser utilizadas após aprovação de um curador.
-O aprendizado fica na base persistente; os pesos não são retreinados a cada conversa.
-
-A versão 0.12.0 reduz o tempo de processamento de prompts maiores nos Qwen,
-mantendo baixo consumo de RAM. Não exige mudanças nas chamadas da API.
-Veja as medições e os limites em [Desempenho](DESEMPENHO.md).
-
-Os modelos Qwen estão ativos na central pública para diálogo, busca semântica
-e programação, incluindo
-`POST /v1/helpdesk/code`. Os pesos são baixados separadamente e podem ser
-convertidos para diretórios SQT em uma instalação própria. O **laboratório
-0.12.0 do subspace** permanece separado da central, com modelos, base e memória
-independentes. Veja [Modelos](MODELOS.md) para instalar e testar.
-
-| O que você precisa fazer | Guia |
-|---|---|
-| Usar a central, perguntar e contribuir | [Central de ajuda](HELPDESK.md) |
-| Integrar o prompt de ajuda ao seu aplicativo | [API do helpdesk](API.md) |
-| Instalar e atualizar a versão 0.12.0 | [Instalação](INSTALACAO.md) |
-| Usar os novos modelos e a API de programação | [Modelos](MODELOS.md) e [API](API.md) |
-| Administrar uma central própria e seus manuais | [Administração](ADMINISTRACAO.md) |
-| Usar geração local e a API de completions | [Terminal](USO.md) e [HTTP](HTTP.md) |
-
-Este repositório reúne documentação de uso, binários e interfaces públicas.
-Os arquivos existentes do kit SDK têm suas próprias versões; para instalar
-a central 0.12.0, use o APT conforme abaixo. Nenhum checkout privado é necessário.
+Versão **0.14.0+schip1**. Este repositório contém os pacotes, suas dependências Schip,
+headers, documentação e exemplos. Nenhum checkout privado é necessário.
 
 ## Instalação e atualização pelo APT (Debian 13 / amd64)
 
@@ -52,16 +22,64 @@ sudo apt install schipia
 ```
 
 O APT resolve as dependências. Pacotes `-dev` são opcionais e destinam-se à compilação.
-Leia [Instalação](INSTALACAO.md) para configurar o sistema e resolver problemas.
+Leia [Configuração do APT](APT.md) para conferir o sistema, configurar manualmente,
+resolver erros e atualizar serviços que compartilham bancos.
 
-## Outros recursos de utilização
+## Instalação com os arquivos deste kit
 
-- [Modelos](MODELOS.md): importar e escolher modelos para geração local.
-- [Ferramentas](FERRAMENTAS.md): comandos disponíveis e verificação da instalação.
-- [Desempenho](DESEMPENHO.md): modos de execução e medições.
-- [Solução de problemas](SOLUCAO_DE_PROBLEMAS.md): diagnóstico de erros comuns.
-- [Licenciamento](LICENCIAMENTO.md): condições de uso e licenças dos componentes.
+```sh
+sha256sum -c SHA256SUMS
+./install.sh
+```
 
-As bibliotecas instaladas ficam em `/usr/lib/schip`. Os arquivos de implementação
-da engine não são publicados aqui. A integração da central é feita pela API;
-consulte os guias acima para os demais modos de utilização.
+O APT instala as dependências do sistema. Os pacotes são compilados para a
+arquitetura indicada em `release.json`; as versões mínimas de libc e demais
+bibliotecas constam nos campos `Depends` dos `.deb`. Confira antes de instalar:
+
+```sh
+for p in debs/*.deb; do dpkg-deb -f "$p" Package Version Architecture Depends; done
+```
+
+As bibliotecas ficam em `/usr/lib/schip`; os headers dos pacotes `-dev`, em
+`/usr/include/schip`. As aplicações dependem desses pacotes compartilhados.
+Serviços seguem os scripts de instalação dos respectivos pacotes.
+
+## Desenvolver usando somente este repositório
+
+Instale `build-essential`, `make`, `python3`, `pkg-config`, `libssl-dev` e
+`zlib1g-dev`. Os exemplos de clientes SQL também usam `libmariadb-dev`.
+
+```sh
+make             # compila os exemplos com include/ e lib/ deste kit
+make check       # executa os exemplos locais de verificação
+make clean       # limpa somente os builds e dados de demonstração
+```
+
+Não é necessário instalar os pacotes para compilar os exemplos. Clientes HTTP,
+SMTP e servidores de demonstração são compilados, mas não iniciados pelo teste
+automático. `make check` do servidor SQL usa um banco temporário e porta própria.
+
+Para desenvolver contra os pacotes instalados:
+
+```sh
+./install.sh --dev  # inclui headers e dependências de compilação
+cc app.c -o app $(pkg-config --cflags --libs libschipbase)
+# Para o motor de banco, use libschip no lugar de libschipbase.
+```
+
+## Conteúdo e atualização
+
+- `debs/`: pacotes prontos e índices APT, com todas as dependências Schip deste kit.
+- `include/` e `lib/`: SDK da mesma versão dos pacotes, para os exemplos locais.
+- `examples/` ou `exemplos/`: código de aplicação demonstrativo; a implementação das bibliotecas não é distribuída.
+- `release.json` e `SHA256SUMS`: versões e integridade dos arquivos entregues.
+- `REFERENCE.md`, `manual/` e `docs/`, quando presentes: referência de API e operação.
+
+Bibliotecas e aplicações com ABI incompatível devem ser atualizadas juntas.
+Recompile seus programas quando mudar o ABI. Reinicie processos que usam uma
+biblioteca atualizada; um processo aberto pode continuar usando a versão anterior.
+
+Os `.deb` já estão prontos: `make` aqui compila os exemplos, não a implementação
+das bibliotecas ou os pacotes. Respeite os termos do arquivo `LICENSE`.
+
+Pacotes grandes são hospedados no repositório oficial. Após clonar pelo Git, execute `./download-packages.sh` antes de instalar ou verificar o kit. O download confere o SHA-256 antes de disponibilizar o pacote.

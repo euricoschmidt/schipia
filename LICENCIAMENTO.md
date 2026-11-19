@@ -17,8 +17,8 @@ respectivos materiais. A licença do SchipIA não substitui essas licenças:
 
 | Componente | Licença e origem |
 |---|---|
-| Pesos Tucano-160M | [Apache-2.0](licencas/TUCANO-APACHE-2.0.txt), [TucanoBR/Tucano-160m](https://huggingface.co/TucanoBR/Tucano-160m). |
-| Materiais llama2.c | [MIT](licencas/LLAMA2C-MIT.txt), [karpathy/llama2.c](https://github.com/karpathy/llama2.c). |
+| Pesos Tucano-160M | Apache-2.0 (referência interna), [TucanoBR/Tucano-160m](https://huggingface.co/TucanoBR/Tucano-160m). |
+| Materiais llama2.c | MIT (referência interna), [karpathy/llama2.c](https://github.com/karpathy/llama2.c). |
 
 O modelo padrão é o Tucano-160M. Os materiais llama2.c se referem à compatibilidade
 e aos materiais de referência associados ao produto; não há fontes desses

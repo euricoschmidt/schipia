@@ -1,0 +1,11 @@
+prefix=/usr
+libdir=${prefix}/lib/schip
+includedir=${prefix}/include/schip
+
+Name: libschipbase
+Description: Biblioteca libschipbase
+Version: 0.5.15+schip4
+Requires: 
+Libs: -L${libdir} -Wl,-rpath,${libdir} -lschipbase
+Libs.private: -lssl -lcrypto -lz -pthread
+Cflags: -I${includedir}

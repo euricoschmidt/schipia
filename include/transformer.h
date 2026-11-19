@@ -11,7 +11,7 @@ enum sct_tensor {
     SCT_EMBEDDING, SCT_FINAL_NORM, SCT_LM_HEAD,
     SCT_ATT_NORM, SCT_WQ, SCT_WK, SCT_WV, SCT_WO, SCT_FF_NORM, SCT_UP, SCT_GATE, SCT_DOWN
 };
-enum { SCT_INFER_SCALAR = 1, SCT_INFER_NO_HOT = 4, SCT_INFER_SPARSE = 8, SCT_INFER_OUT_OF_CORE = 16 };
+enum { SCT_INFER_SCALAR = 1, SCT_INFER_NO_HOT = 4, SCT_INFER_SPARSE = 8, SCT_INFER_OUT_OF_CORE = 16, SCT_INFER_KV_F16 = 32 };
 typedef struct {
     uint64_t forward_steps, new_kv_blocks, attention_block_reads, index_lookups, hot_hits, hot_bytes;
     uint64_t sparse_clusters_total, sparse_clusters_active, sparse_bytes_saved;
@@ -47,7 +47,10 @@ int sct_model_q8(const sct_model *);
  */
 int sct_model_pack_q4(const char *source,const char *output);
 int sct_model_q4(const sct_model *);
+int sct_model_pack_q4p(const char *source,const char *output);
+int sct_model_q4p(const sct_model *);
 int sct_model_trained(const sct_model *);
+int sct_model_instruct(const sct_model *);
 sct_model *sct_model_open(const char *path);
 void sct_model_close(sct_model *);
 const sct_model_config *sct_model_configuration(const sct_model *);
@@ -66,6 +69,7 @@ int sct_forward_batch(sct_context *, uint64_t sequence, const uint32_t *tokens, 
  * until the next mutation/remap or close. Does not run inference/replay.
  */
 int sct_sequence_state(sct_context *, uint64_t, uint64_t *tokens, const float **logits);
+const float *sct_context_hidden(const sct_context *, size_t *dim);
 int sct_sequence_token(sct_context *, uint64_t sequence, uint64_t position, uint32_t *token);
 sct_infer_stats sct_context_stats(const sct_context *);
 /* Write-once vocabulary identity; binding requires an entirely empty cache.
