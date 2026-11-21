@@ -4,7 +4,7 @@ includedir=${prefix}/include/schip
 
 Name: libschipbase
 Description: Biblioteca libschipbase
-Version: 0.5.15+schip4
+Version: 0.5.16
 Requires: 
 Libs: -L${libdir} -Wl,-rpath,${libdir} -lschipbase
 Libs.private: -lssl -lcrypto -lz -pthread

@@ -93,6 +93,8 @@ int sct_matvec_rows_q4p_scalar(const uint8_t *w, const float *x, float *y, size_
 int sct_matvec_qkv_q4p(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t rows_q, size_t rows_kv, size_t columns);
 int sct_ffn_gate_up_swiglu_q4p(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t rows, size_t columns);
 int sct_matvec_rows_q4p_batch(const uint8_t *w, const float *x, float *y, size_t m, size_t rows, size_t columns, size_t x_stride, size_t y_stride);
+int sct_q4p_qkv_batch(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t m, size_t rows_q, size_t rows_kv, size_t columns, size_t x_stride);
+int sct_q4p_gate_up_swiglu_batch(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t m, size_t rows, size_t columns, size_t x_stride);
 int sct_q4_qkv_batch(const uint8_t *wq, const uint8_t *wk, const uint8_t *wv, const float *x, float *q, float *k, float *v, size_t m, size_t rows_q, size_t rows_kv, size_t columns, size_t x_stride);
 int sct_q4_gate_up_swiglu_batch(const uint8_t *w_gate, const uint8_t *w_up, const float *x, float *out, size_t m, size_t rows, size_t columns, size_t x_stride);
 int sct_matvec_rows_q4_batch_i8(const uint8_t *w, const float *x, float *y, size_t m, size_t rows, size_t columns, size_t x_stride, size_t y_stride);

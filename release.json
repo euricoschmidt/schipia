@@ -1,13 +1,13 @@
 {
   "project": "schipia",
-  "version": "0.14.0+schip1",
+  "version": "0.14.1",
   "kind": "schipia",
   "architecture": "amd64",
   "packages": {
-    "libschipbase": "0.5.15+schip4",
-    "libschipbase-dev": "0.5.15+schip4",
-    "libschiptree": "1.0.0+schip4",
-    "libschiptree-dev": "1.0.0+schip4",
-    "schipia": "0.14.0+schip1"
+    "libschipbase": "0.5.16",
+    "libschipbase-dev": "0.5.16",
+    "libschiptree": "1.0.1",
+    "libschiptree-dev": "1.0.1",
+    "schipia": "0.14.1"
   }
 }

@@ -1,6 +1,6 @@
 # schipia: distribuição binária
 
-Versão **0.14.0+schip1**. Este repositório contém os pacotes, suas dependências Schip,
+Versão **0.14.1**. Este repositório contém os pacotes, suas dependências Schip,
 headers, documentação e exemplos. Nenhum checkout privado é necessário.
 
 ## Instalação e atualização pelo APT (Debian 13 / amd64)
