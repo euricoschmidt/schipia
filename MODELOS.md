@@ -1,25 +1,61 @@
-# Modelos para diálogo, busca e programação — 0.12.0
+# Modelos para diálogo, busca, programação e MoE — 0.15.0
 
 Os perfis Qwen são opcionais e instalados separadamente do pacote `schipia`.
 Os aplicativos consultam a API central; seus usuários não precisam baixar os
-pesos. A instalação e o uso não exigem Python, PyTorch ou programas em C++.
+pesos. A instalação e o uso não exigem Python, PyTorch nem SDKs de GPU.
 
 ## Escolher o perfil
 
-| Instalação | Modelo | Formato padrão | Uso pela API |
+| Instalação | Modelo | Formato recomendado | Uso pela API |
 |---|---|---|---|
-| `qwen3` | Qwen3-4B-Instruct-2507 | Q8 | `schipia-helpdesk`, respostas sobre os manuais |
-| `coder` | Qwen2.5-Coder-7B-Instruct | Q4 | `schipia-coder`, assistência de programação |
-| `coder-fast` | Qwen2.5-Coder-1.5B-Instruct | Q8 | `schipia-coder-fast`, menor consumo e latência |
+| `qwen3` | Qwen3-4B-Instruct-2507 | **Q4P** (ou Q8) | `schipia-helpdesk`, respostas sobre os manuais |
+| `coder` | Qwen2.5-Coder-7B-Instruct | **Q4P** / Q4 | `schipia-coder`, assistência de programação |
+| `coder-fast` | Qwen2.5-Coder-1.5B-Instruct | **Q4P** / Q4 | `schipia-coder-fast`, menor consumo e latência |
 | `embedding` | Qwen3-Embedding-0.6B | Q8 | Busca por significado usada pelo helpdesk |
+| MoE (GGUF / Safetensors) | `qwen3_moe` / `qwen2_moe` (ex.: 30B-A3B, 57B-A14B) | **Q4P alinhado a 4096 B/expert** | Execução local ou em servidor com streaming `mmap` + LFRU |
 
-Prefira o Coder-7B quando a qualidade do código for prioritária. O perfil menor
-economiza recursos, mas pode cometer mais erros. Compare as medições em
-[Desempenho](DESEMPENHO.md); revise e teste qualquer código sugerido.
+Prefira o formato **`Q4P`** (`quantize-q4p` ou `import-gguf ... q4p`) para máxima velocidade em CPU AVX2, CUDA e Vulkan, com metade do consumo de RAM do Q8.
 
-## Baixar e instalar
+## Importar GGUF v2/v3 diretamente para `Q4P`
 
-Instale primeiro `schipia=0.12.0` conforme [Instalação](INSTALACAO.md).
+Qualquer modelo Qwen2, Qwen3, Qwen2-MoE ou Qwen3-MoE publicado em `.gguf` (`F32`, `F16`, `BF16`, `Q4_0`, `Q8_0`, `Q4_K` ou `Q6_K`, incluindo tensores 3D de experts e *shared experts*) pode ser convertido em um único passo:
+
+```sh
+schipia-qwen import-gguf modelo.gguf modelo-q4p.qw q4p
+schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique como conferir um backup.' 64
+```
+
+Para converter um modelo `.qw` existente (Q8/BF16/Q4) para o formato `Q4P` otimizado:
+
+```sh
+schipia-qwen quantize-q4p /var/lib/schipia-models/qwen3/model.qw /var/lib/schipia-models/qwen3/model-q4p.qwt
+```
+
+## Modelos gigantes (MoE) com streaming de disco e cache LFRU
+
+Modelos `qwen3_moe` e `qwen2_moe` (incluindo *shared experts*) têm cada expert alinhado em página de `4096 B`. Quando o arquivo excede a memória disponível (`MemAvailable` / `cgroup v2`) ou com `SCHIPIA_STREAM_MMAP=1`:
+
+- Apenas os experts selecionados pelo router (`top_k`) são lidos do disco sob demanda via `mmap`.
+- Os pesos densos (atenção, normas, embeddings e *shared experts*) permanecem residentes em RAM.
+- Uma thread dedicada em background faz prefetch assíncrono (`MADV_WILLNEED`) dos experts mais quentes da próxima camada segundo o mapa de calor **LFRU**, enquanto experts frios são liberados com `MADV_COLD`.
+- No prefill (`qw_prefill`), os tokens são agrupados por expert ativo (`qw_moe_mlp_batch`), lendo cada expert uma única vez por lote.
+
+## Executar com aceleração de GPU (CUDA ou Vulkan)
+
+```sh
+# NVIDIA CUDA (PTX embutido via libcuda.so.1, cache LRU automático de VRAM)
+SCHIPIA_GPU=cuda schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique o protocolo TCP.' 64
+
+# Vulkan (NVIDIA, AMD, Intel ou GPU integrada via libvulkan.so.1)
+SCHIPIA_GPU=vulkan schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique o protocolo TCP.' 64
+
+# Automático (tenta CUDA -> Vulkan -> CPU) com limite explícito de 3072 MiB de VRAM
+SCHIPIA_GPU=1 SCHIPIA_VRAM_MB=3072 schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique o protocolo TCP.' 64
+```
+
+## Baixar e instalar os perfis padrão
+
+Instale primeiro `schipia` conforme [Instalação](INSTALACAO.md).
 Reserve dezenas de GB para baixar e converter os quatro modelos completos.
 
 ```sh

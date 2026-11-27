@@ -38,7 +38,12 @@ def build():
         run(['make', '-C', 'examples', 'all', 'CC=' + os.environ.get('CC', 'cc')])
         return
     dirs = ('examples', 'exemplos')
-    libs = ['-lschiptree', '-lpthread'] if kind == 'libschiptree' else ['-lschipbase', '-lssl', '-lcrypto', '-lz', '-lpthread']
+    if kind == 'libschiptree':
+        libs = ['-lschiptree', '-lpthread']
+    elif kind == 'schipia':
+        libs = ['-lschipia', '-lschiptree', '-lschipbase', '-lm', '-lpthread']
+    else:
+        libs = ['-lschipbase', '-lssl', '-lcrypto', '-lz', '-lpthread']
     for directory in dirs:
         for src in sorted((ROOT / directory).glob('*.c')):
             output = BUILD / 'examples' / src.stem
@@ -106,7 +111,7 @@ def check():
                  '-lschipbase', '-lssl', '-lcrypto', '-lz', '-lpthread', '-o', output])
             run([output], timeout=60)
         for binary in sorted((BUILD / 'examples').glob('*')):
-            if binary.name.startswith('json_') or binary.name == 'hello':
+            if kind == 'schipia' or binary.name.startswith('json_') or binary.name == 'hello':
                 run([binary], timeout=30)
     print('OK: exemplos compilados e testes executados somente com este kit.', flush=True)
 

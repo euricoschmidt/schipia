@@ -3,6 +3,27 @@
 Os exemplos usam `MODEL` e `STATE` de [Instalação](INSTALACAO.md). A ferramenta
 principal de geração e memória está descrita em [Uso](USO.md).
 
+## `schipia-qwen` — importar, quantizar e executar Qwen2 / Qwen3 / MoE
+
+```sh
+# Importar GGUF v2/v3 (denso ou MoE) direto para Q4P alinhado por página
+schipia-qwen import-gguf modelo.gguf modelo-q4p.qw q4p
+
+# Importar HuggingFace .safetensors (qwen2, qwen3, qwen2_moe, qwen3_moe)
+schipia-qwen import ./dir-hf modelo.qw 8
+
+# Converter modelo .qw existente para Q4P (mais rápido e compacto)
+schipia-qwen quantize-q4p modelo.qw modelo-q4p.qwt
+
+# Empacotar em diretório SQT e verificar integridade
+schipia-qwen pack-tree modelo.qw modelo.sqt
+schipia-qwen verify-tree modelo.sqt
+
+# Gerar texto (CPU dinâmica, CUDA ou Vulkan)
+schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique o que é RAID 10.' 64
+SCHIPIA_GPU=1 schipia-qwen generate modelo-q4p.qw vocab.qw 'Explique o que é RAID 10.' 64
+```
+
 ## Tokenizar texto com o modelo instalado
 
 ```sh

@@ -19,10 +19,10 @@ extern "C" {
 #include "memory_store.h"
 #include "helpdesk.h"
 
-#define SCHIPIA_VERSION_STRING "0.14.1"
+#define SCHIPIA_VERSION_STRING "0.15.0"
 #define SCHIPIA_VERSION_MAJOR  0
-#define SCHIPIA_VERSION_MINOR  14
-#define SCHIPIA_VERSION_PATCH  1
+#define SCHIPIA_VERSION_MINOR  15
+#define SCHIPIA_VERSION_PATCH  0
 
 #ifdef __cplusplus
 }

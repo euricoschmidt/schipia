@@ -4,8 +4,10 @@ Repositório: **https://deb.schip.com.br**. Os pacotes disponíveis são para
 **Debian 13 (trixie), arquitetura amd64**. Não use esta fonte em outra versão
 do Debian, no Ubuntu ou em outra arquitetura.
 
-**Atualização para Schipmyserver/libschip 0.5.27+schip1:** comece pelo
-[inventário e procedimento de atualização](https://deb.schip.com.br/schipmyserver/0.5.27/UPGRADE.md).
+**Atualização para Schipmyserver/libschip 0.5.28:** leia as
+[notas da versão atual](https://deb.schip.com.br/schipmyserver/0.5.28/RELEASE.md)
+e o [inventário e procedimento de atualização](https://deb.schip.com.br/schipmyserver/0.5.27/UPGRADE.md).
+Use o candidato atual do APT; não fixe versões dos exemplos históricos.
 Os novos pacotes coordenam parada, backup frio conferido, migração offline
 dos mapas v1, preservação da configuração e validação antes da retomada.
 Planeje a janela e o quórum Fleet, confira espaço e consumidores adicionais.
@@ -79,7 +81,7 @@ a atualização para um horário em que essa interrupção seja aceitável.
 
 ### Quando vários serviços usam os mesmos bancos
 
-Os pacotes 0.5.27+schip1 incluem o coordenador de manutenção mesmo quando os
+Os pacotes atuais incluem o coordenador de manutenção mesmo quando os
 hooks APT anteriores ainda estão instalados. Ele para os consumidores
 identificados, faz backup frio verificado e valida os arquivos e mapas antes
 de abrir o SQL. As aplicações retornam após a verificação SQL/Fleet.

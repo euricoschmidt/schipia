@@ -7,6 +7,7 @@ typedef struct qw_tokenizer qw_tokenizer;
 /* Native C runtime. Original safetensors are read only during conversion.
  * Each runtime owns its KV cache; weights and vocabulary remain mmap-backed. */
 int qw_import(const char *source, const char *destination, int bits);
+int qw_import_gguf(const char *gguf_path, const char *destination, int bits);
 /* Lossless tree bundle: destination must not exist. */
 int qw_pack_tree(const char *source, const char *destination);
 int qw_quantize_tree_q4(const char *source, const char *destination);
@@ -16,6 +17,7 @@ int qw_verify_tree(const char *path);
 uint64_t qw_signature(const char *path);
 qw_model *qw_open(const char *path, unsigned context);
 int qw_enable_kv_cache(qw_model *model, const char *directory);
+int qw_enable_moe_heat(qw_model *model, const char *path);
 void qw_close(qw_model *model);
 void qw_reset(qw_model *model);
 unsigned qw_dimension(const qw_model *model);

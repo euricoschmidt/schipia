@@ -4,7 +4,7 @@ includedir=${prefix}/include/schip
 
 Name: libschiptree
 Description: Biblioteca libschiptree
-Version: 1.0.1
+Version: 1.0.2
 Requires: 
 Libs: -L${libdir} -Wl,-rpath,${libdir} -lschiptree
 Libs.private: -pthread

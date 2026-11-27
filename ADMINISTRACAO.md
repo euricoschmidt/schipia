@@ -1,4 +1,4 @@
-# Administrar uma central de ajuda SchipIA 0.12.0
+# Administrar uma central de ajuda SchipIA 0.15.0
 
 Para consumir a central hospedada em https://schipia.schip.com.br, basta uma
 chave de integração e os passos de [API.md](API.md). Este guia é para quem
@@ -6,7 +6,7 @@ administra o servidor ou instala uma central própria.
 
 ## Instalação e primeira configuração
 
-Instale `schipia=0.12.0` pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
+Instale `schipia` (`0.15.0`) pelo APT conforme [INSTALACAO.md](INSTALACAO.md).
 O pacote cria o usuário de serviço `schipia` e prepara a base inicial e o
 vocabulário em `/var/lib/schipia-helpdesk/`. As respostas e o aprendizado
 persistente ficam nesse servidor, compartilhados pelas integrações autorizadas.
@@ -56,10 +56,12 @@ vocabulário no diretório de estado. Para executar em primeiro plano:
 ```sh
 sudo -u schipia schipia-helpdesk serve \
   /var/lib/schipia-helpdesk/knowledge /etc/schipia/clients.tsv \
-  /var/lib/schipia-helpdesk/memory 8090 4 \
+  /var/lib/schipia-helpdesk/memory 8090 auto \
   /usr/share/schipia/models/helpdesk160m/model.sct_model \
   /var/lib/schipia-helpdesk/vocab.sct_tokens
 ```
+
+O argumento `auto` (ou `0`) seleciona automaticamente o número ótimo de threads respeitando `OMP_NUM_THREADS`, `cgroup v2` (`CPUQuota`) e reservando 2 núcleos em servidores com ≥ 6 cores. Para o `systemd` em um servidor de 8 núcleos, recomenda-se `CPUQuota=600%` com `8090 auto`. O cache persistente de prefixo KV é armazenado automaticamente em `<estado>/kv_cache` (com rotação automática em 1 GiB). Para ativar GPU no serviço, defina `Environment=SCHIPIA_GPU=1` (ou `cuda` / `vulkan`) na unidade `systemd`.
 
 Pare a unidade antes de executar esse comando: a memória admite um gravador
 por vez. Os últimos dois caminhos são opcionais; omita ambos para atendimento

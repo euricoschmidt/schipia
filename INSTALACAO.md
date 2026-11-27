@@ -1,32 +1,35 @@
 # Instalação e atualização
 
-A versão atual no repositório APT é **0.12.0**, para **Debian 13 (trixie), amd64**.
-Ela inclui a central de ajuda, seus manuais iniciais e o modelo de instruções
-em português. Não é preciso instalar Python ou PyTorch.
+A versão atual no repositório APT é **0.15.0**, para **Debian 13 (trixie), amd64**.
+Ela inclui o motor de inferência C11 (`Q4P` AVX2/NEON, MoE com streaming `mmap`, importador GGUF v2/v3, aceleração opcional CUDA e Vulkan via `dlopen`), a central de ajuda, seus manuais iniciais e o modelo de instruções em português. Não é preciso instalar Python, PyTorch nem SDKs de GPU para instalar ou executar.
 
-Os novos Qwen de diálogo, programação e busca são opcionais e baixados
-separadamente com `schipia-models`. Consulte [Modelos](MODELOS.md) para instalar
-e ativar esses perfis. Atualizar o pacote preserva o estado e o atendimento
-existente; não ativa Qwen automaticamente em uma instalação própria. No subspace,
-a central pública já usa Qwen na versão 0.12.0, com laboratório separado.
+Os perfis Qwen de diálogo, programação e busca são opcionais e baixados
+separadamente com `schipia-models`, ou importados diretamente de `.safetensors` ou `.gguf` com `schipia-qwen`. Consulte [Modelos](MODELOS.md) para instalar, converter para `Q4P` e ativar esses perfis. Atualizar o pacote preserva o estado, o cache KV e o atendimento existente.
 
 Para usar a central já hospedada, acesse https://schipia.schip.com.br com sua
 chave autorizada, ou integre o aplicativo conforme [API.md](API.md).
 O aplicativo cliente não precisa instalar os modelos localmente.
 
 Para instalar ou atualizar uma central própria, configure o APT conforme a
-seção abaixo e execute `sudo apt update` e `sudo apt install schipia=0.12.0`.
+seção abaixo e execute `sudo apt update` e `sudo apt install schipia`.
 Confira com `dpkg-query -W schipia`. A instalação fornece a unidade
 `schipia-helpdesk.service`; ela precisa de um cadastro de clientes antes de
 iniciar. Siga [Administração](ADMINISTRACAO.md) para configurar as credenciais.
 Atualizações preservam a memória, as chaves e uma base de manuais já existente.
 
-A versão 0.12.0 processa prompts maiores dos Qwen com menos tempo e ciclos,
-sem exigir nova conversão dos modelos `.qw` já utilizados. Diretórios SQT
-também são aceitos. As melhorias são aplicadas automaticamente no hardware
-compatível; não há um novo parâmetro obrigatório. Faça backup do estado antes
-de atualizar uma instância própria e confira `engine_run --version` ao terminar.
-Consulte [Desempenho](DESEMPENHO.md) para dimensionar RAM e timeout.
+## Variáveis de ambiente de runtime (CPU, GPU e Streaming)
+
+O binário detecta automaticamente a melhor configuração da máquina, mas pode ser ajustado via ambiente:
+
+| Variável | Valores | Efeito |
+|---|---|---|
+| `OMP_NUM_THREADS` | inteiro `1..64` | Sobrescreve a auto-detecção dinâmica de threads (que por padrão respeita `cgroup v2` e reserva 2 cores em servidores com ≥6 núcleos). |
+| `SCHIPIA_GPU` | `0` (padrão), `1`, `cuda`, `vulkan` | `1` tenta NVIDIA CUDA (`libcuda.so.1`) e cai para Vulkan (`libvulkan.so.1`) ou CPU; `cuda` e `vulkan` forçam o backend específico. |
+| `SCHIPIA_VRAM_MB` | inteiro `>= 64` | Limite manual do cache LRU de VRAM em MiB (padrão: 80% livre em CUDA, 70% do heap `DEVICE_LOCAL` em Vulkan). |
+| `SCHIPIA_VK_DEVICE` | índice `0..15` | Escolhe manualmente a GPU Vulkan (padrão: prefere GPU discreta e depois integrada). |
+| `SCHIPIA_STREAM_MMAP` | `0` ou `1` | Força streaming `mmap` sob demanda com prefetch assíncrono e eviction (`MADV_COLD`) para modelos maiores que a RAM (ativado automaticamente quando o modelo excede `MemAvailable`/cgroup). |
+
+Consulte [Desempenho](DESEMPENHO.md) para medições em CPU e GPU.
 
 Os arquivos de execução direta e SDK presentes em `bin/`, `lib/` e `include/`
 pertencem ao kit existente, com versões próprias. As instruções a seguir sobre
@@ -85,8 +88,8 @@ Este repositório público contém documentação; solicite o pacote ao forneced
 Na pasta em que recebeu o arquivo:
 
 ```sh
-dpkg-deb -f ./schipia_0.12.0_amd64.deb Package Version Architecture Depends
-sudo apt install ./schipia_0.12.0_amd64.deb
+dpkg-deb -f ./schipia_0.15.0_amd64.deb Package Version Architecture Depends
+sudo apt install ./schipia_0.15.0_amd64.deb
 engine_run --version
 engine_run --help
 ```

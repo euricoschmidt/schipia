@@ -1,6 +1,37 @@
 # Desempenho e escolha de configuração
 
-## Atualização 0.12.0 e contextos maiores
+## Versão 0.15.0: formato `Q4P`, threads dinâmicas, KV cache persistente e GPU
+
+### CPU (`subspace`, Debian 13, Intel Core i7-9700, 8 núcleos, `Qwen3-4B-Instruct` em `Q4P` — 2,3 GiB)
+
+Medições de 26/11/2026 com prompt de 84 tokens e geração de 48 tokens:
+
+| Threads | Prefill (84 tok) | Prefill tok/s | Decode (48 tok) | Decode tok/s | Total |
+|---:|---:|---:|---:|---:|---:|
+| 4 | 2,141 s | 39,2 tok/s | 3,424 s | 14,02 tok/s | 5,565 s |
+| **6 (padrão `auto`)** | **1,457 s** | **57,7 tok/s** | **3,179 s** | **15,10 tok/s** | **4,636 s** |
+| 7 | 1,303 s | 64,5 tok/s | 3,342 s | 14,36 tok/s | 4,645 s |
+| 8 (sem reserva) | 5,174 s | 16,2 tok/s | 8,102 s | 5,92 tok/s | 13,276 s |
+
+Em servidores com ≥ 6 núcleos, `sct_auto_threads()` reserva automaticamente 2 núcleos para o sistema operacional e proxy HTTP, evitando contenção nas barreiras OpenMP e mantendo o ponto ótimo de prefill e decode.
+
+### Produção HTTP (`https://schipia.schip.com.br` com cache KV persistente em `libschiptree`)
+
+| Métrica | Antes (`0.14.0` Q8) | Depois (`0.15.0` Q4P + KV cache) |
+|---|---:|---:|
+| Tempo total de resposta completa (HTTP) | 60,50 s | **16,43 s** (**3,7× mais rápido**) |
+| Prefill com prefixo em cache (234 tokens) | ~5,8 s | **0,67 s** |
+| Tamanho do modelo `qwen3` em disco/RAM | ~4,3 GiB (Q8) | **2,3 GiB (`Q4P`)** |
+
+### GPU (`Q4P` 2048×2048, lote `m=4`, validado contra referência escalar de CPU)
+
+| Backend / GPU | Erro máximo vs CPU | Tempo médio / matmul |
+|---|---:|---:|
+| CUDA (`SCHIPIA_GPU=cuda`, NVIDIA GTX 1650) | `8.101e-06` | `2,297 ms` |
+| Vulkan (`SCHIPIA_GPU=vulkan`, NVIDIA GTX 1650) | `7.987e-06` | `1,408 ms` |
+| Vulkan iGPU (`SCHIPIA_GPU=vulkan`, AMD Radeon Vega) | `8.076e-06` | **`0,625 ms`** |
+
+## Histórico: atualização 0.12.0 e contextos maiores
 
 Atualize pelo APT e mantenha os modelos existentes. O processamento dos prompts
 Qwen foi otimizado automaticamente nas CPUs AVX2/FMA compatíveis. As demais

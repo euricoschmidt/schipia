@@ -123,6 +123,8 @@ int sct_swiglu_scalar(const float *gate, const float *up, float *out, size_t n);
 int sct_swiglu_avx2(const float *gate, const float *up, float *out, size_t n);
 int sct_swiglu_neon(const float *gate, const float *up, float *out, size_t n);
 
+/* Returns optimal worker thread count respecting OMP_NUM_THREADS, cgroup v2 CPU quota, and online CPUs. */
+int sct_auto_threads(void);
 /* Sets the number of OpenMP worker threads used by parallel kernels (0 = default/auto). */
 void sct_set_num_threads(int threads);
 #endif

@@ -1,29 +1,32 @@
-# SchipIA 0.10.0 — central de ajuda e inferência em C11
+# SchipIA 0.15.0 — central de ajuda e motor de inferência em C11
 
-Novos perfis opcionais: Qwen3-4B para diálogo, Qwen3-Embedding para busca
-semântica e Qwen2.5-Coder-7B para programação, com opção rápida de 1,5B.
+Motor C11 de alta eficiência para inferência local de modelos densos e **Mixture-of-Experts (MoE)**,
+memória persistente em `libschiptree`, central de ajuda autenticada e aceleração opcional em **CPU (AVX2/FMA, ARM64 NEON)**, **NVIDIA CUDA** e **Vulkan (NVIDIA, AMD, Intel e iGPUs)** — tudo em binário enxuto, sem Python em runtime e sem dependências de SDK de GPU em compilação.
+
+## Novidades da versão 0.15.0
+
+- **Formato `Q4P` (`type=5`) de alta velocidade**: blocos 4×4 intercalados com escala otimizada por MSE, multiplicação `int8×int8` (`_mm256_maddubs_epi16`), fusão de projeções (`QKV` e `Gate+Up+SwiGLU`), decode em região OpenMP única, `F16C` no KV cache e tabelas RoPE pré-calculadas.
+- **Execução nativa de modelos MoE gigantes (`qwen3_moe`, `qwen2_moe`) sem caber inteiros na RAM**:
+  - Empilhamento de experts alinhados em página (`4096 B` por expert) para streaming sob demanda via `mmap` (`SCHIPIA_STREAM_MMAP=1` ou detecção automática via `cgroup v2` + `MemAvailable`).
+  - Rastreamento persistente de calor **LFRU** (`qw_enable_moe_heat`), prefetch assíncrono em thread dedicada (`MADV_WILLNEED`) da próxima camada e eviction (`MADV_COLD`) de experts frios.
+  - Prefill MoE agrupado por expert (`qw_moe_mlp_batch`, lendo cada expert uma única vez por lote), decode MoE `Q4P` em região OpenMP única e suporte a *shared experts* (`shared_expert` + `shared_expert_gate`).
+- **Importação direta de GGUF v2/v3 → `Q4P`**: `schipia-qwen import-gguf <modelo.gguf> <saida.qw> [q4p|q4|q8|bf16]` suporta modelos densos (`qwen2`, `qwen3`) e MoE (`qwen2moe`, `qwen3moe`, tensores 3D de experts e *shared experts*) nos formatos `F32`, `F16`, `BF16`, `Q4_0`, `Q8_0`, `Q4_K` e `Q6_K`.
+- **Aceleração GPU zero-dependência (`dlopen`)**:
+  - **CUDA** (`SCHIPIA_GPU=cuda` ou `SCHIPIA_GPU=1`): carrega `libcuda.so.1` com kernels PTX embutidos para `Q4` e `Q4P`, orçamento automático via `cuMemGetInfo_v2` (ou `SCHIPIA_VRAM_MB`) e cache **LRU** de VRAM para execução híbrida VRAM/RAM/NVMe.
+  - **Vulkan 1.0** (`SCHIPIA_GPU=vulkan` ou fallback automático de `SCHIPIA_GPU=1`): carrega `libvulkan.so.1` com compute shader SPIR-V 1.0 embutido para `Q4P`, seleção automática de GPU discreta/integrada (`SCHIPIA_VK_DEVICE=<idx>`) e cache **LRU** de VRAM.
+- **Threads dinâmicas (`sct_auto_threads`)**: respeita `OMP_NUM_THREADS`, cota `cgroup v2` (`cpu.max`) e reserva 2 núcleos em servidores com ≥6 cores para evitar contenção de barreiras OpenMP; `schipia-helpdesk serve ... <porta> auto`.
+- **Produção HTTP / Helpdesk**: cache persistente de prefixo KV em `libschiptree` (rotação automática em 1 GiB), streaming SSE (`"stream": true` em `/v1/helpdesk/answer`), cancelamento cooperativo ao desconectar o cliente e índice invertido incremental.
+
+Novos perfis opcionais: Qwen3-4B (`Q4P`/Q8) para diálogo, Qwen3-Embedding para busca
+semântica e Qwen2.5-Coder-7B / 1.5B para programação, além de qualquer modelo Qwen2/Qwen3/MoE importado de HuggingFace `.safetensors` ou `.gguf`.
 Consulte o [guia de modelos](docs/references/9e9d0fb1-MODELOS.md) para instalação, ativação e API.
-Os pesos são instalados separadamente do pacote de execução. O laboratório
-permanece no subspace.
+Os pesos são instalados separadamente do pacote de execução.
 
 A central de ajuda reúne documentação de 18 aplicativos e atende pela API
 autenticada em `https://schipia.schip.com.br`. Ela respeita aplicativo, versão,
 tela, perfil e organização, apresenta fontes e retém avaliações e contribuições.
 Informações novas passam por aprovação antes de entrar nas respostas.
 Veja [uso da central](docs/references/2ca9f0d1-USO.md) e [integração e administração](docs/references/d667c850-INTEGRACAO.md).
-
-Motor C11 de inferência local, memória persistente e tokenização usando libschiptree.
-As cinco fases do protótipo estão implementadas, incluindo `bin/engine_run`, `bin/schipia-server`,
-`bin/schipia-import-gguf` e a biblioteca compartilhada `build/libschipia.so`.
-Inclui pesos reais Tucano-160M, importador GGUF v2/v3, tokenizador BPE exato e índice KV híbrido.
-Os conversores JSON usam a **libschipjson**.
-
-Recursos recentes documentados em [MEMORY.md](MEMORY.md):
-- Kernels AVX2/FMA e ARM64 NEON com micro-tiling de 4 linhas (`q4_4rows`/`q8_4rows`), fusão QKV e Gate+Up+SwiGLU, e prefill em lote (`sct_forward_batch`).
-- Suporte a GQA (`kv_heads`), `rope_theta`, `rms_eps` e importação direta de modelos GGUF (`F32`/`F16`/`BF16`/`Q8_0`/`Q4_0`/`Q4_K` via `bin/schipia-import-gguf`).
-- Prefix caching persistente em `libschiptree` (blocos de 8 tokens KV) e amostragem Top-K com min-heap.
-- Execução esparsa e out-of-core (`--sparse`, `--tree`, `--page-align`, `--out-of-core`) com deduplicação de clusters.
-- Templates de chat (`--chat chatml|llama3`, `--system`) em `engine_run` e endpoint `POST /v1/chat/completions` com engine persistente em `schipia-server`.
 
 Licenciado conforme [LICENSE](LICENSE), nos mesmos termos da libschiptree.
 Os avisos MIT de llama2.c e Apache-2.0 do modelo Tucano permanecem aplicáveis
