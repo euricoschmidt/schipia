@@ -15,6 +15,16 @@ Medições de 26/11/2026 com prompt de 84 tokens e geração de 48 tokens:
 
 Em servidores com ≥ 6 núcleos, `sct_auto_threads()` reserva automaticamente 2 núcleos para o sistema operacional e proxy HTTP, evitando contenção nas barreiras OpenMP e mantendo o ponto ótimo de prefill e decode.
 
+### Comparação direta no `subspace` (511 e 1.990 tokens de prompt + 64 gerados)
+
+Medições de 26/11/2026 com `schipia 0.15.0` (`auto` = 6 threads em Intel Core i7-9700, modelos `Q4P`/`Q4`) frente às medições anteriores da `0.12.0` e do `llama.cpp` na mesma máquina:
+
+| Perfil e entrada | SchipIA `0.12.0` (Q8, 4t) | `llama.cpp` (Q8, 4t) | **SchipIA `0.15.0` (`Q4P`/`Q4`, `auto=6t`)** | Prefill / Decode (`0.15.0`) | Pico RAM `0.15.0` (vs `llama.cpp`) |
+|---|---:|---:|---:|---:|---:|
+| Coder 1,5B, ~512 tokens (511t) | 8,69 s | 8,43 s | **4,12 s** (**2,05× mais rápido**) | 157,7 / 73,6 tok/s | **1.077 MiB** (vs 1.890 MiB, -43%) |
+| Qwen3-4B, ~512 tokens (511t) | 24,25 s | 23,51 s | **15,95 s** (**1,47× mais rápido**) | 48,9 / 11,7 tok/s | **2.514 MiB** (vs 5.343 MiB, -53%) |
+| Qwen3-4B, ~2.000 tokens (1.990t) | 108,50 s | 72,61 s | **62,57 s** (**1,16× mais rápido**) | 35,9 / 8,9 tok/s | **2.791 MiB** (vs 5.425 MiB, -49%) |
+
 ### Produção HTTP (`https://schipia.schip.com.br` com cache KV persistente em `libschiptree`)
 
 | Métrica | Antes (`0.14.0` Q8) | Depois (`0.15.0` Q4P + KV cache) |
