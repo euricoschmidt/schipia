@@ -1,9 +1,14 @@
-# SchipIA 0.15.0 — central de ajuda e motor de inferência em C11
+# SchipIA 0.15.1 — central de ajuda e motor de inferência em C11
 
-Motor C11 de alta eficiência para inferência local de modelos densos e **Mixture-of-Experts (MoE)**,
-memória persistente em `libschiptree`, central de ajuda autenticada e aceleração opcional em **CPU (AVX2/FMA, ARM64 NEON)**, **NVIDIA CUDA** e **Vulkan (NVIDIA, AMD, Intel e iGPUs)** — tudo em binário enxuto, sem Python em runtime e sem dependências de SDK de GPU em compilação.
+Motor C11 de alta eficiência para inferência local de modelos densos (até 128 camadas / 70B+) e **Mixture-of-Experts (MoE)**,
+memória persistente em `libschiptree`, central de ajuda autenticada e aceleração opcional em **CPU (AVX-512 VNNI, AVX2/FMA, ARM64 NEON)**, **NVIDIA CUDA (FP32 + Tensor Cores `mma.sync`)** e **Vulkan (NVIDIA, AMD, Intel e iGPUs)** — tudo em binário enxuto, sem Python em runtime e sem dependências de SDK de GPU em compilação.
 
-## Novidades da versão 0.15.0
+## Novidades das versões 0.15.0 / 0.15.1
+
+- **Kernels nativos AVX-512 VNNI (`vpdpbusd`)**: micro-kernel `4×4` sem *register spilling* em 32 registradores vetoriais com detecção automática em runtime (`sct_has_avx512_vnni()`), mantendo compatibilidade total com `-march=x86-64`.
+- **Tensor Cores em PTX puro (`sm_75+`)**: kernel `q4p_tc_m16n8k8` (`mma.sync.aligned.m16n8k8.row.col.f32.f16.f16.f32`) ativado automaticamente em lotes (`m >= 8`) sobre `Q4P`, entregando até **18,5× mais throughput por token** no prefill em GPU sem precisar de CUDA Toolkit.
+- **Suporte a modelos 70B/72B e 235B (>64 camadas)**: cabeçalho v3 retrocompatível com até **128 camadas** e **2.048 tensores** (mantendo v1/v2 intactos para modelos ≤64 camadas).
+- **Atenção causal em prefill com K/V contíguo pré-descompactado**: elimina conversões F16→F32 redundantes durante o prefill de contextos longos (-8,8% no tempo de prefill de 1.990 tokens no `subspace`).
 
 - **Formato `Q4P` (`type=5`) de alta velocidade**: blocos 4×4 intercalados com escala otimizada por MSE, multiplicação `int8×int8` (`_mm256_maddubs_epi16`), fusão de projeções (`QKV` e `Gate+Up+SwiGLU`), decode em região OpenMP única, `F16C` no KV cache e tabelas RoPE pré-calculadas.
 - **Execução nativa de modelos MoE gigantes (`qwen3_moe`, `qwen2_moe`) sem caber inteiros na RAM**:

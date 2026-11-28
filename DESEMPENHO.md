@@ -23,7 +23,7 @@ Medições de 26/11/2026 com `schipia 0.15.0` (`auto` = 6 threads em Intel Core 
 |---|---:|---:|---:|---:|---:|
 | Coder 1,5B, ~512 tokens (511t) | 8,69 s | 8,43 s | **4,12 s** (**2,05× mais rápido**) | 157,7 / 73,6 tok/s | **1.077 MiB** (vs 1.890 MiB, -43%) |
 | Qwen3-4B, ~512 tokens (511t) | 24,25 s | 23,51 s | **15,95 s** (**1,47× mais rápido**) | 48,9 / 11,7 tok/s | **2.514 MiB** (vs 5.343 MiB, -53%) |
-| Qwen3-4B, ~2.000 tokens (1.990t) | 108,50 s | 72,61 s | **62,57 s** (**1,16× mais rápido**) | 35,9 / 8,9 tok/s | **2.791 MiB** (vs 5.425 MiB, -49%) |
+| Qwen3-4B, ~2.000 tokens (1.990t) | 108,50 s | 72,61 s | **58,30 s** (**1,25× mais rápido**) | 39,4 / 8,2 tok/s | **2.806 MiB** (vs 5.425 MiB, -48%) |
 
 ### Produção HTTP (`https://schipia.schip.com.br` com cache KV persistente em `libschiptree`)
 
@@ -33,13 +33,14 @@ Medições de 26/11/2026 com `schipia 0.15.0` (`auto` = 6 threads em Intel Core 
 | Prefill com prefixo em cache (234 tokens) | ~5,8 s | **0,67 s** |
 | Tamanho do modelo `qwen3` em disco/RAM | ~4,3 GiB (Q8) | **2,3 GiB (`Q4P`)** |
 
-### GPU (`Q4P` 2048×2048, lote `m=4`, validado contra referência escalar de CPU)
+### GPU (`Q4P` 2048×2048, validado contra referência escalar de CPU)
 
-| Backend / GPU | Erro máximo vs CPU | Tempo médio / matmul |
-|---|---:|---:|
-| CUDA (`SCHIPIA_GPU=cuda`, NVIDIA GTX 1650) | `8.101e-06` | `2,297 ms` |
-| Vulkan (`SCHIPIA_GPU=vulkan`, NVIDIA GTX 1650) | `7.987e-06` | `1,408 ms` |
-| Vulkan iGPU (`SCHIPIA_GPU=vulkan`, AMD Radeon Vega) | `8.076e-06` | **`0,625 ms`** |
+| Backend / GPU | Lote (`m`) | Erro máximo vs CPU | Tempo médio / matmul | Tempo por token |
+|---|---:|---:|---:|---:|
+| CUDA FP32 (`SCHIPIA_GPU=cuda`, NVIDIA GTX 1650) | 4 | `8.101e-06` | `2,186 ms` | `0,546 ms/tok` |
+| **CUDA Tensor Cores `mma.sync`** (`SCHIPIA_GPU=cuda`, NVIDIA GTX 1650) | **32** | `1.553e-04` | **`0,944 ms`** | **`0,0295 ms/tok`** (**18,5×**) |
+| Vulkan (`SCHIPIA_GPU=vulkan`, NVIDIA GTX 1650) | 4 | `7.987e-06` | `1,408 ms` | `0,352 ms/tok` |
+| Vulkan iGPU (`SCHIPIA_GPU=vulkan`, AMD Radeon Vega) | 4 | `8.076e-06` | **`0,625 ms`** | **`0,156 ms/tok`** |
 
 ## Histórico: atualização 0.12.0 e contextos maiores
 

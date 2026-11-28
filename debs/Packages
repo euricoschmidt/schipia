@@ -8,10 +8,10 @@ Conflicts: libschip-base
 Replaces: libschip-base
 Provides: libschipbase-abi-2, libschip-base (= 0.5.16), libschip-base-abi-2
 Filename: ./libschipbase_0.5.16_amd64.deb
-Size: 83368
-MD5sum: 9e1b9cef2eacb233fdde9d79e31fbc0e
-SHA1: 57d96535914914a2c7cb9b353cab3f91fa7924e1
-SHA256: 2138004097334f260357fdd65a15b3434f0d3e7f2f6b649a5bf285cb506c2cc5
+Size: 83268
+MD5sum: 2a80aa574c7413b60ce3a4dbf407389a
+SHA1: 8e7cbce214dfe33cada8ca5c36c0cf969f61c36a
+SHA256: 55055c405a8af9611a898cecb6fe8c8eb98eca59d327c375e5e71e055858aad4
 Section: libs
 Priority: optional
 Description: Biblioteca compartilhada libschipbase do ambiente Schip
@@ -23,10 +23,10 @@ Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
 Pre-Depends: python3
 Depends: libc6-dev, libschipbase (= 0.5.16), libssl-dev, zlib1g-dev
 Filename: ./libschipbase-dev_0.5.16_amd64.deb
-Size: 80868
-MD5sum: dc314c1bedc6b6697691730e6a03f117
-SHA1: 3a4a073a960b32725614dae34c1e29a01875345a
-SHA256: c7db8bfbdcb3d8451accac31665d8328a5f829250ed4c11ba483c029367e82e2
+Size: 80900
+MD5sum: 6636a460d2d636810f1792dd93ac0603
+SHA1: 68e8c28a7897b3051dc468648eee1b03dacadeb7
+SHA256: 8b7d1a3d3d25f02e34fd992c93a5d6e49aafe9a2568924f04ed41e0b5fca7574
 Section: libs
 Priority: optional
 Description: Headers e bibliotecas estaticas de libschipbase
@@ -42,10 +42,10 @@ Breaks: libschip (<< 0.5.15+schip1), libschiptree-dev (<< 1.0.0+schip1)
 Replaces: libschip (<< 0.5.15+schip1)
 Provides: libschiptree-abi-1, libschiptree1 (= 1.0.0)
 Filename: ./libschiptree_1.0.2_amd64.deb
-Size: 39124
-MD5sum: d2cabd5c163318f331f75b2e13a1602a
-SHA1: 59010c4bfd638be76d6e5fa2a3cde1f7a896900e
-SHA256: 6499d0e116e269bc1876a3344a529b37f024a74efca4115a99801b9144d963f0
+Size: 39128
+MD5sum: 9e579422dda8580c11c1207dd0a266cb
+SHA1: c7f69d177185159809850d17f76a5188a729bbf2
+SHA256: 79b4ceb76566e7f5b51bf20bce74c22bb974e442460024a2ec2fdec2e9f2ad85
 Section: libs
 Priority: optional
 Description: Biblioteca compartilhada libschiptree do ambiente Schip
@@ -57,26 +57,26 @@ Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
 Pre-Depends: python3
 Depends: libc6-dev, libschiptree (= 1.0.2)
 Filename: ./libschiptree-dev_1.0.2_amd64.deb
-Size: 46800
-MD5sum: 0f76b387870d4493fe28910b544c9d6f
-SHA1: 1c850be1cc965b2f510c77abb7f2de7d31d9fe2d
-SHA256: b89c9c54828b76c22b58068876af9c661d347f03528434ce2d09a3873600b904
+Size: 46788
+MD5sum: 0fcf8a1df59e67fe7cc5662b8f19b8c8
+SHA1: 893963a8e1cab1ce1d0387c2b04e3e30608e361a
+SHA256: ee2592ac5d2a94864bfce8d30183360aa7fd44d767e01691c3a2a1329468c70a
 Section: libs
 Priority: optional
 Description: Headers e bibliotecas estaticas de libschiptree
 
 Package: schipia
-Version: 0.15.0
+Version: 0.15.1
 Architecture: amd64
 Maintainer: Eurico Schmidt <euricoalvesschmidt@gmail.com>
 Depends: adduser, libc6 (>= 2.38), libgomp1, libgomp1 (>= 6), libschipbase (>= 0.5.16), libschipbase-abi-2, libschiptree (>= 1.0.2), libschiptree-abi-1
 Conflicts: schipia-phase1, schipia-phase2, schipia-phase3, schipia-phase4, schipia-phase5
 Replaces: schipia-phase1, schipia-phase2, schipia-phase3, schipia-phase4, schipia-phase5
-Filename: ./schipia_0.15.0_amd64.deb
-Size: 467085424
-MD5sum: 874dd439db2a5479e0a2c5dc86808760
-SHA1: a9b5e78cfc7416ae378a62009bc7d98c67b474c4
-SHA256: e0d09603605a7c442ef3380d192b71bdb0c7ed0ce0ec6114e3ba2d2c07352550
+Filename: ./schipia_0.15.1_amd64.deb
+Size: 467103040
+MD5sum: b1463023c33a851c1378cd12bee10379
+SHA1: 9eb83953f94b57dd57b92b3355e72098cbefb9af
+SHA256: 78907006b473a10aaaabe35cbfee931019a06693df84e14d09a8e4a470ce6cb4
 Section: science
 Priority: optional
 Description: SchipIA trained C language model with persistent memory

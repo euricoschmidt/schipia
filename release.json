@@ -1,6 +1,6 @@
 {
   "project": "schipia",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "kind": "schipia",
   "architecture": "amd64",
   "packages": {
@@ -8,6 +8,6 @@
     "libschipbase-dev": "0.5.16",
     "libschiptree": "1.0.2",
     "libschiptree-dev": "1.0.2",
-    "schipia": "0.15.0"
+    "schipia": "0.15.1"
   }
 }
